@@ -1,0 +1,12 @@
+fastapi
+uvicorn[standard]
+pydantic
+pydantic-settings
+motor
+asyncpg
+databases
+python-dotenv
+scikit-learn
+pandas
+numpy
+python-multipart
