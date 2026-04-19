@@ -59,19 +59,14 @@ export default function HomePage() {
               </Link>
             </div>
             
-            {/* Right side (Lang, Currency, Profile) */}
-            <div className="flex items-center space-x-6">
-              <div className="flex items-center space-x-1 cursor-pointer">
-                <span className="text-sm font-medium text-gray-600">UZS</span>
-                <ChevronDown className="h-4 w-4 text-gray-400" />
-              </div>
-              <div className="flex items-center space-x-1 cursor-pointer">
-                <span className="text-sm font-medium text-gray-600">EN</span>
-                <ChevronDown className="h-4 w-4 text-gray-400" />
-              </div>
-              <div className="h-10 w-10 bg-gray-900 rounded-full flex items-center justify-center text-brand-yellow font-bold text-sm cursor-pointer hover:bg-gray-800 transition">
-                JT
-              </div>
+            {/* Right side (Auth buttons) */}
+            <div className="flex items-center space-x-3">
+              <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition">
+                Kirish
+              </Link>
+              <Link href="/register" className="text-sm font-medium bg-gray-900 text-brand-yellow px-5 py-2 rounded-lg hover:bg-black transition">
+                Ro'yxatdan o'tish
+              </Link>
             </div>
           </div>
         </div>
