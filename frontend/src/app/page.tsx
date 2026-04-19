@@ -128,6 +128,7 @@ export default function HomePage() {
           <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-4 md:mb-6 tracking-tight leading-tight">
             Sifatli <span className="text-brand-yellow">Ijara.</span>
           </h1>
+          {/* v1.2.1-deploy-test */}
           <p className="text-base sm:text-lg md:text-2xl text-gray-300 mb-8 md:mb-12 max-w-3xl mx-auto font-light leading-relaxed">
             O'zbekistondagi eng qulay AI-avtomobil ijarasi platformasi.
             <span className="hidden sm:inline"> Tez bron, oson to'lov, ishonchli xizmat.</span>
