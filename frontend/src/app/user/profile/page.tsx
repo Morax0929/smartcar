@@ -16,6 +16,15 @@ export default function UserProfile() {
   const [user, setUser] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Edit forms state
+  const [isEditing, setIsEditing] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [editPhone, setEditPhone] = useState("");
+
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [msg, setMsg] = useState({ text: "", type: "" });
+
   useEffect(() => {
     const fetchUser = async () => {
       const token = Cookies.get("access_token");
@@ -26,7 +35,10 @@ export default function UserProfile() {
           headers: { "Authorization": `Bearer ${token}` }
         });
         if (res.ok) {
-          setUser(await res.json());
+          const data = await res.json();
+          setUser(data);
+          setEditName(data.full_name || "");
+          setEditPhone(data.phone || "");
         }
       } catch (error) {
         console.error("Profilni yuklashda xatolik");
@@ -38,10 +50,81 @@ export default function UserProfile() {
     fetchUser();
   }, []);
 
+  const handleUpdateProfile = async () => {
+    const token = Cookies.get("access_token");
+    if (!token) return;
+
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/auth/me`, {
+        method: "PUT",
+        headers: { 
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          full_name: editName,
+          phone: editPhone
+        })
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        setUser(data);
+        setIsEditing(false);
+        setMsg({ text: "Profil muvaffaqiyatli yangilandi!", type: "success" });
+        setTimeout(() => setMsg({ text: "", type: "" }), 3000);
+      } else {
+        setMsg({ text: "Xatolik yuz berdi.", type: "error" });
+      }
+    } catch (error) {
+      setMsg({ text: "Tarmoq xatosi.", type: "error" });
+    }
+  };
+
+  const handleUpdatePassword = async () => {
+    if (!password || password !== confirmPassword) {
+      setMsg({ text: "Parollar mos kelmadi yoki bo'sh!", type: "error" });
+      setTimeout(() => setMsg({ text: "", type: "" }), 3000);
+      return;
+    }
+
+    const token = Cookies.get("access_token");
+    if (!token) return;
+
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/auth/me`, {
+        method: "PUT",
+        headers: { 
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ password })
+      });
+      
+      if (res.ok) {
+        setPassword("");
+        setConfirmPassword("");
+        setMsg({ text: "Parol muvaffaqiyatli o'zgartirildi!", type: "success" });
+        setTimeout(() => setMsg({ text: "", type: "" }), 3000);
+      } else {
+        setMsg({ text: "Xatolik yuz berdi.", type: "error" });
+      }
+    } catch (error) {
+      setMsg({ text: "Tarmoq xatosi.", type: "error" });
+    }
+  };
+
   if (loading) return <div className="p-10 text-center">Yuklanmoqda...</div>;
 
   return (
     <div className="max-w-3xl space-y-6">
+       
+       {msg.text && (
+         <div className={`p-4 rounded-xl text-sm font-bold ${msg.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+           {msg.text}
+         </div>
+       )}
+
        <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 relative overflow-hidden">
          {/* Decoration */}
          <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
@@ -57,22 +140,30 @@ export default function UserProfile() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                <div className="space-y-2">
                  <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-1.5"><User className="w-3 h-3" /> To'liq ism</label>
-                 <div className="w-full px-5 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-bold text-slate-900">
-                    {user?.full_name || "Noma'lum"}
-                 </div>
+                 {isEditing ? (
+                   <input value={editName} onChange={e => setEditName(e.target.value)} className="w-full px-5 py-3.5 rounded-2xl bg-white border border-amber-500 outline-none text-sm font-bold text-slate-900" />
+                 ) : (
+                   <div className="w-full px-5 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-bold text-slate-900">
+                      {user?.full_name || "Noma'lum"}
+                   </div>
+                 )}
                </div>
                <div className="space-y-2">
                  <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-1.5"><Phone className="w-3 h-3" /> Telefon raqam</label>
-                 <div className="w-full px-5 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-bold text-slate-900">
-                    {user?.phone || "Noma'lum"}
-                 </div>
+                 {isEditing ? (
+                   <input value={editPhone} onChange={e => setEditPhone(e.target.value)} className="w-full px-5 py-3.5 rounded-2xl bg-white border border-amber-500 outline-none text-sm font-bold text-slate-900" />
+                 ) : (
+                   <div className="w-full px-5 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-bold text-slate-900">
+                      {user?.phone || "Noma'lum"}
+                   </div>
+                 )}
                </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                <div className="space-y-2">
                  <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-1.5"><Mail className="w-3 h-3" /> Email manzili</label>
-                 <div className="w-full px-5 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-bold text-slate-900">
+                 <div className="w-full px-5 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-bold text-slate-900 opacity-60">
                     {user?.email || "Noma'lum"}
                  </div>
                </div>
@@ -85,12 +176,20 @@ export default function UserProfile() {
             </div>
             
             <div className="pt-4 flex gap-3">
-              <button className="bg-slate-900 hover:bg-slate-800 text-white font-bold px-10 py-4 rounded-2xl transition-all shadow-lg active:scale-95 text-xs uppercase tracking-widest">
-                 Taxrirlash
-              </button>
-              <button className="bg-white border border-slate-200 text-slate-500 font-bold px-10 py-4 rounded-2xl hover:bg-slate-50 transition-all text-xs uppercase tracking-widest">
-                 Arxiv
-              </button>
+              {isEditing ? (
+                <>
+                  <button onClick={handleUpdateProfile} className="bg-amber-500 hover:bg-amber-600 text-white font-bold px-10 py-4 rounded-2xl transition-all shadow-lg active:scale-95 text-xs uppercase tracking-widest">
+                     Saqlash
+                  </button>
+                  <button onClick={() => setIsEditing(false)} className="bg-white border border-slate-200 text-slate-500 font-bold px-10 py-4 rounded-2xl hover:bg-slate-50 transition-all text-xs uppercase tracking-widest">
+                     Bekor qilish
+                  </button>
+                </>
+              ) : (
+                <button onClick={() => setIsEditing(true)} className="bg-slate-900 hover:bg-slate-800 text-white font-bold px-10 py-4 rounded-2xl transition-all shadow-lg active:scale-95 text-xs uppercase tracking-widest">
+                   Taxrirlash
+                </button>
+              )}
             </div>
          </div>
        </div>
@@ -105,17 +204,18 @@ export default function UserProfile() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
              <div className="space-y-2">
                <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Yangi parol</label>
-               <input type="password" placeholder="••••••••" className="w-full px-5 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:border-amber-500 text-sm font-medium transition-all" />
+               <input value={password} onChange={e => setPassword(e.target.value)} type="password" placeholder="••••••••" className="w-full px-5 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:border-amber-500 text-sm font-medium transition-all" />
              </div>
              <div className="space-y-2">
                <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Parolni tasdiqlash</label>
-               <input type="password" placeholder="••••••••" className="w-full px-5 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:border-amber-500 text-sm font-medium transition-all" />
+               <input value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} type="password" placeholder="••••••••" className="w-full px-5 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 outline-none focus:border-amber-500 text-sm font-medium transition-all" />
              </div>
           </div>
-          <button className="bg-green-600 hover:bg-green-700 text-white font-bold px-10 py-4 rounded-2xl transition-all shadow-md active:scale-95 text-[10px] uppercase tracking-widest">
+          <button onClick={handleUpdatePassword} className="bg-green-600 hover:bg-green-700 text-white font-bold px-10 py-4 rounded-2xl transition-all shadow-md active:scale-95 text-[10px] uppercase tracking-widest">
             Parolni yangilash
          </button>
        </div>
     </div>
   );
 }
+

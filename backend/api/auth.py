@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from datetime import timedelta
 from typing import List
 
-from schemas.user import UserCreate, UserLogin, Token, UserResponse
+from schemas.user import UserCreate, UserLogin, Token, UserResponse, UserUpdate
 from models.user import User
 from core.database import get_db
 from core.security import verify_password, get_password_hash, create_access_token
@@ -69,4 +69,17 @@ def get_users(db: Session = Depends(get_db), current_user: User = Depends(get_cu
 
 @router.get("/me", response_model=UserResponse)
 def get_me(current_user: User = Depends(get_current_user)):
+    return current_user
+
+@router.put("/me", response_model=UserResponse)
+def update_me(user_update: UserUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if user_update.full_name:
+        current_user.full_name = user_update.full_name
+    if user_update.phone:
+        current_user.phone = user_update.phone
+    if user_update.password:
+        current_user.hashed_password = get_password_hash(user_update.password)
+        
+    db.commit()
+    db.refresh(current_user)
     return current_user

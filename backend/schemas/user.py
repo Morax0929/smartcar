@@ -18,10 +18,16 @@ class Token(BaseModel):
     token_type: str
     role: str
 
+class UserUpdate(BaseModel):
+    full_name: Optional[str] = None
+    phone: Optional[str] = None
+    password: Optional[str] = None
+
 class UserResponse(BaseModel):
     id: int
     full_name: str
     email: str
+    phone: Optional[str] = None
     role: str
     
     class Config:
