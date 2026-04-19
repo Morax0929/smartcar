@@ -22,7 +22,7 @@ export default function HomePage() {
       setShowAuthModal(true)
       return
     }
-    router.push(`/katalog?location=${selectedLocation}&pickup=${pickupDate}&return=${returnDate}`)
+    router.push(`/user/cars?location=${selectedLocation}&pickup=${pickupDate}&return=${returnDate}`)
   }
 
   const locations = [
