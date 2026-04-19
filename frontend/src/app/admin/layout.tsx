@@ -8,6 +8,7 @@ import Cookies from 'js-cookie';
 
 const PAGE_TITLES: Record<string, string> = {
   '/admin': 'Boshqaruv Paneli',
+  '/admin/cars': 'Avtomobillar Boshqaruvi',
   '/admin/bookings': 'Buyurtmalar Nazorati',
   '/admin/users': 'Mijozlar va Reytinglar',
   '/admin/ai-agent': '🤖 AI Komandir',
@@ -42,6 +43,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const navLinks = [
     { href: '/admin', label: 'Boshqaruv Paneli', icon: LayoutDashboard },
+    { href: '/admin/cars', label: 'Avtomobillar', icon: Car },
     { href: '/admin/bookings', label: 'Buyurtmalar', icon: CalendarDays },
     { href: '/admin/users', label: 'Mijozlar', icon: Users },
     { href: '/admin/maintenance', label: 'Texnik Xizmat', icon: Wrench },
@@ -55,7 +57,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside className="w-60 bg-slate-900 border-r border-slate-800 text-slate-300 flex flex-col shrink-0">
         {/* Logo */}
         <Link href="/" className="h-16 flex items-center px-5 border-b border-slate-800 text-white hover:bg-slate-800 transition-colors">
-          <ShieldAlert className="h-5 w-5 text-amber-500 mr-2" />
+          <div className="bg-slate-700 rounded-md p-1.5 flex items-center justify-center mr-2">
+            <Car className="h-4 w-4 text-amber-500" />
+          </div>
           <span className="font-bold text-base">SmartCar AI</span>
         </Link>
 

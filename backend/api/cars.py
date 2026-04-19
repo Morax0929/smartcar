@@ -49,6 +49,19 @@ def delete_car(car_id: int, current_user: User = Depends(get_current_user), db: 
     db.commit()
     return {"message": "Mashina o'chirildi"}
 
+@router.put("/{car_id}", response_model=CarResponse)
+def update_car(car_id: int, car_data: CarCreate, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Faqat adminlar tahrirlash huquqiga ega!")
+    car = db.query(Car).filter(Car.id == car_id).first()
+    if not car:
+        raise HTTPException(status_code=404, detail="Mashina topilmadi")
+    for key, value in car_data.model_dump().items():
+        setattr(car, key, value)
+    db.commit()
+    db.refresh(car)
+    return car
+
 # ── Reviews ───────────────────────────────────────────────────
 
 @router.get("/{car_id}/reviews", response_model=List[ReviewResponse])
