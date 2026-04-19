@@ -12,7 +12,17 @@ export default function HomePage() {
   const [selectedLocation, setSelectedLocation] = useState("Toshkent shahri")
   const [pickupDate, setPickupDate] = useState("")
   const [returnDate, setReturnDate] = useState("")
+  const [showAuthModal, setShowAuthModal] = useState(false)
   const locationRef = useRef<HTMLDivElement>(null)
+
+  const handleSearch = () => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      setShowAuthModal(true)
+      return
+    }
+    router.push(`/katalog?location=${selectedLocation}&pickup=${pickupDate}&return=${returnDate}`)
+  }
 
   const locations = [
     "Toshkent shahri",
@@ -170,7 +180,7 @@ export default function HomePage() {
             </div>
 
             <button 
-              onClick={() => router.push(`/katalog?location=${selectedLocation}&pickup=${pickupDate}&return=${returnDate}`)}
+              onClick={handleSearch}
               className="w-full md:w-auto bg-[#0f172a] text-white px-8 py-4 rounded-xl hover:bg-black transition font-medium whitespace-nowrap h-[68px] flex items-center justify-center gap-2"
             >
               <Search className="h-5 w-5" /> Avtomobil qidirish
@@ -296,6 +306,54 @@ export default function HomePage() {
 
       {/* Chatbot */}
       <Chatbot />
+
+      {/* Auth Modal */}
+      {showAuthModal && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+          style={{ backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}
+          onClick={() => setShowAuthModal(false)}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full text-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Lock icon */}
+            <div className="mx-auto mb-5 h-16 w-16 bg-gray-900 rounded-full flex items-center justify-center">
+              <svg className="h-7 w-7 text-brand-yellow" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </div>
+
+            <h2 className="text-xl font-bold text-gray-900 mb-2">Kirish talab etiladi</h2>
+            <p className="text-gray-500 text-sm mb-7 leading-relaxed">
+              Avtomobil qidirish va bron qilish uchun tizimga kiring yoki ro'yxatdan o'ting.
+            </p>
+
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={() => router.push('/login')}
+                className="w-full bg-gray-900 text-brand-yellow font-semibold py-3 rounded-xl hover:bg-black transition"
+              >
+                Kirish
+              </button>
+              <button
+                onClick={() => router.push('/register')}
+                className="w-full border border-gray-200 text-gray-700 font-semibold py-3 rounded-xl hover:bg-gray-50 transition"
+              >
+                Ro'yxatdan o'tish
+              </button>
+            </div>
+
+            <button
+              onClick={() => setShowAuthModal(false)}
+              className="mt-5 text-xs text-gray-400 hover:text-gray-600 transition"
+            >
+              Bekor qilish
+            </button>
+          </div>
+        </div>
+      )}
 
     </div>
   )
