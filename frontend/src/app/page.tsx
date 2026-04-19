@@ -7,6 +7,7 @@ import Chatbot from '@/components/chat/Chatbot'
 import { useRouter } from 'next/navigation'
 import Cookies from 'js-cookie'
 import { getImageUrl } from '@/lib/utils'
+import { apiClient } from '@/lib/api'
 
 export default function HomePage() {
   const router = useRouter()
@@ -17,11 +18,17 @@ export default function HomePage() {
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [isAuth, setIsAuth] = useState(false)
+  const [popularCars, setPopularCars] = useState<any[]>([])
   const locationRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     // Client-side xavfsiz check qilish (Hydration mismatch bo'lmasligi uchun)
     setIsAuth(!!Cookies.get('access_token'))
+    
+    // Ommabop avtomobillarni bazadan yuklash (faqat mavjudlarini)
+    apiClient.get('/cars/available')
+      .then(res => setPopularCars(res.data.slice(0, 3)))
+      .catch(err => console.error("Katalog yuklanmadi:", err))
   }, [])
 
   const handleSearch = () => {
@@ -273,28 +280,23 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-8">
-            <CarCard 
-              brand="Chevrolet" 
-              model="Damas" 
-              price="130,000" 
-              image="https://images.unsplash.com/photo-1469854523086-cc02fe5d8df0?w=800&q=80"
-              hasAiPrice 
-            />
-            <CarCard 
-              brand="Chevrolet" 
-              model="Lacetti" 
-              price="160,000" 
-              image="https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=800&q=80"
-              hasAiPrice 
-              isActive 
-            />
-            <CarCard 
-              brand="Chevrolet" 
-              model="Spark" 
-              price="120,000" 
-              image="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&q=80"
-              hasAiPrice 
-            />
+            {popularCars.length > 0 ? (
+              popularCars.map((car: any, idx: number) => (
+                <CarCard 
+                  key={car.id}
+                  brand={car.brand} 
+                  model={car.name} 
+                  price={car.price_per_day.toLocaleString()} 
+                  image={car.image_url}
+                  hasAiPrice 
+                  isActive={idx === 1} 
+                />
+              ))
+            ) : (
+              <div className="col-span-1 sm:col-span-2 lg:col-span-3 text-center py-10 text-gray-500">
+                Hozircha bo'sh...
+              </div>
+            )}
           </div>
 
           <div className="mt-6 text-center md:hidden">
