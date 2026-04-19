@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { FileText, FileUp, ShieldCheck, Clock, Download, AlertCircle, CheckCircle2 } from "lucide-react";
 import Cookies from "js-cookie";
+import { apiClient } from "@/lib/api";
 
 interface Document {
   id: number;
@@ -20,13 +21,9 @@ export default function UserDocuments() {
   const [uploading, setUploading] = useState<string | null>(null);
 
   const fetchDocuments = async () => {
-    const token = Cookies.get("access_token");
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/documents/my`, {
-        headers: { "Authorization": `Bearer ${token}` }
-      });
-      const data = await res.json();
-      if (res.ok) setDocuments(data);
+      const res = await apiClient.get('/documents/my');
+      setDocuments(res.data);
     } catch (error) {
       console.error("Hujjatlarni yuklashda xatolik");
     } finally {
@@ -48,12 +45,10 @@ export default function UserDocuments() {
     formData.append("file", file);
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/documents/upload?type=${type}`, {
-        method: "POST",
-        headers: { "Authorization": `Bearer ${token}` },
-        body: formData
+      await apiClient.post(`/documents/upload?type=${type}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
-      if (res.ok) fetchDocuments();
+      fetchDocuments();
     } catch (error) {
       alert("Hujjatni yuklashda xatolik");
     } finally {

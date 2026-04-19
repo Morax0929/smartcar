@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { User, ShieldCheck, Mail, Phone, Fingerprint } from "lucide-react";
 import Cookies from "js-cookie";
+import { apiClient } from "@/lib/api";
 
 interface UserData {
   id: number;
@@ -27,19 +28,12 @@ export default function UserProfile() {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const token = Cookies.get("access_token");
-      if (!token) return;
-
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/auth/me`, {
-          headers: { "Authorization": `Bearer ${token}` }
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setUser(data);
-          setEditName(data.full_name || "");
-          setEditPhone(data.phone || "");
-        }
+        const res = await apiClient.get('/auth/me');
+        const data = res.data;
+        setUser(data);
+        setEditName(data.full_name || "");
+        setEditPhone(data.phone || "");
       } catch (error) {
         console.error("Profilni yuklashda xatolik");
       } finally {
@@ -51,33 +45,18 @@ export default function UserProfile() {
   }, []);
 
   const handleUpdateProfile = async () => {
-    const token = Cookies.get("access_token");
-    if (!token) return;
-
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/auth/me`, {
-        method: "PUT",
-        headers: { 
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          full_name: editName,
-          phone: editPhone
-        })
+      const res = await apiClient.put('/auth/me', {
+        full_name: editName,
+        phone: editPhone
       });
       
-      if (res.ok) {
-        const data = await res.json();
-        setUser(data);
-        setIsEditing(false);
-        setMsg({ text: "Profil muvaffaqiyatli yangilandi!", type: "success" });
-        setTimeout(() => setMsg({ text: "", type: "" }), 3000);
-      } else {
-        setMsg({ text: "Xatolik yuz berdi.", type: "error" });
-      }
+      setUser(res.data);
+      setIsEditing(false);
+      setMsg({ text: "Profil muvaffaqiyatli yangilandi!", type: "success" });
+      setTimeout(() => setMsg({ text: "", type: "" }), 3000);
     } catch (error) {
-      setMsg({ text: "Tarmoq xatosi.", type: "error" });
+      setMsg({ text: "Xatolik yuz berdi.", type: "error" });
     }
   };
 
@@ -88,29 +67,15 @@ export default function UserProfile() {
       return;
     }
 
-    const token = Cookies.get("access_token");
-    if (!token) return;
-
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/auth/me`, {
-        method: "PUT",
-        headers: { 
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ password })
-      });
+      await apiClient.put('/auth/me', { password });
       
-      if (res.ok) {
-        setPassword("");
-        setConfirmPassword("");
-        setMsg({ text: "Parol muvaffaqiyatli o'zgartirildi!", type: "success" });
-        setTimeout(() => setMsg({ text: "", type: "" }), 3000);
-      } else {
-        setMsg({ text: "Xatolik yuz berdi.", type: "error" });
-      }
+      setPassword("");
+      setConfirmPassword("");
+      setMsg({ text: "Parol muvaffaqiyatli o'zgartirildi!", type: "success" });
+      setTimeout(() => setMsg({ text: "", type: "" }), 3000);
     } catch (error) {
-      setMsg({ text: "Tarmoq xatosi.", type: "error" });
+      setMsg({ text: "Xatolik yuz berdi.", type: "error" });
     }
   };
 

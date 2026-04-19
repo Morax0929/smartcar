@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { CalendarClock, Car as CarIcon, CheckCircle2, AlertCircle, Clock } from "lucide-react";
 import Cookies from "js-cookie";
 import Link from "next/link";
+import { apiClient } from "@/lib/api";
 
 interface Booking {
   id: number;
@@ -23,17 +24,9 @@ export default function UserBookings() {
 
   useEffect(() => {
     const fetchBookings = async () => {
-      const token = Cookies.get("access_token");
-      if (!token) return;
-
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/bookings/my`, {
-          headers: {
-            "Authorization": `Bearer ${token}`
-          }
-        });
-        const data = await res.json();
-        setBookings(data);
+        const res = await apiClient.get('/bookings/my');
+        setBookings(res.data);
       } catch (err) {
         console.error("Foydalanuvchi ijaralarini yuklashda xatolik");
       } finally {

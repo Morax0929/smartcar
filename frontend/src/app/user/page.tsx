@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Star, Sparkles, TrendingUp, CarFront, Users, DollarSign } from "lucide-react";
+import { apiClient } from "@/lib/api";
 
 interface Car {
   id: number;
@@ -32,13 +33,11 @@ export default function UserDashboard() {
     const fetchData = async () => {
       try {
         const [carsRes, reviewsRes] = await Promise.all([
-          fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/cars/available`),
-          fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/cars/1/reviews`),
+          apiClient.get('/cars/available'),
+          apiClient.get('/cars/1/reviews').catch(() => ({ data: [] })), // Fallback bo'sh massiv
         ]);
-        const carsData = await carsRes.json();
-        const reviewsData = await reviewsRes.json();
-        setCars(carsData);
-        setReviews(reviewsData);
+        setCars(carsRes.data);
+        setReviews(reviewsRes.data);
       } catch (e) {
         console.error("API ulanish xatosi:", e);
       } finally {

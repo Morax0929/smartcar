@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Star, ShieldCheck, Mail, Phone, Clock, CheckCircle2, XCircle, Eye, X } from "lucide-react";
 import Cookies from "js-cookie";
+import { apiClient } from "@/lib/api";
 
 interface User {
   id: number;
@@ -29,15 +30,14 @@ export default function AdminUsers() {
   const [showModal, setShowModal] = useState(false);
 
   const fetchData = async () => {
-    const token = Cookies.get("access_token");
     try {
       const [usersRes, docsRes] = await Promise.all([
-        fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/auth/users`, { headers: { "Authorization": `Bearer ${token}` } }),
-        fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/documents/all`, { headers: { "Authorization": `Bearer ${token}` } })
+        apiClient.get('/auth/users'),
+        apiClient.get('/documents/all')
       ]);
       
-      if (usersRes.ok) setUsers(await usersRes.json());
-      if (docsRes.ok) setDocuments(await docsRes.json());
+      setUsers(usersRes.data);
+      setDocuments(docsRes.data);
     } catch (error) {
       console.error("Ma'lumotlarni yuklashda xatolik");
     } finally {
@@ -55,18 +55,11 @@ export default function AdminUsers() {
     setShowModal(true);
   };
 
-  const updateDocStatus = async (docId: number, status: string) => {
-    const token = Cookies.get("access_token");
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/documents/${docId}/status?status=${status}`, {
-        method: "PUT",
-        headers: { "Authorization": `Bearer ${token}` }
-      });
-      if (res.ok) {
-        fetchData();
-        // Update modal state localy
-        setSelectedUserDocs(prev => prev.map(d => d.id === docId ? { ...d, status } : d));
-      }
+      await apiClient.put(`/documents/${docId}/status?status=${status}`);
+      fetchData();
+      // Update modal state localy
+      setSelectedUserDocs(prev => prev.map(d => d.id === docId ? { ...d, status } : d));
     } catch (error) {
       alert("Statusni yangilashda xatolik");
     }

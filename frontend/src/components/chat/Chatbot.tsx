@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Bot, MessageSquareText, Send, X } from 'lucide-react';
+import { apiClient } from '@/lib/api';
 
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,19 +20,10 @@ export default function Chatbot() {
     setInput('');
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/ai/chat`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userMsg })
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setMessages(prev => [...prev, { role: 'ai', text: data.reply }]);
-      } else {
-        setMessages(prev => [...prev, { role: 'ai', text: "Kechirasiz, tizimda xatolik yuz berdi." }]);
-      }
+      const res = await apiClient.post('/ai/chat', { message: userMsg });
+      setMessages(prev => [...prev, { role: 'ai', text: res.data.reply }]);
     } catch {
-      setMessages(prev => [...prev, { role: 'ai', text: "Server bilan aloqa uzildi." }]);
+      setMessages(prev => [...prev, { role: 'ai', text: "Kechirasiz, tizimda xatolik yuz berdi." }]);
     }
   };
 

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Printer, ChevronLeft, ShieldCheck, FileText, CheckCircle2 } from "lucide-react";
 import Cookies from "js-cookie";
+import { apiClient } from "@/lib/api";
 
 interface Booking {
   id: number;
@@ -26,26 +27,20 @@ export default function RentalAgreement() {
   const [userName, setUserName] = useState("");
 
   useEffect(() => {
-    const token = Cookies.get("access_token");
-    if (!token) { router.push("/login"); return; }
+    // Profil ma'lumotlarini olish (User name uchun)
+    apiClient.get('/auth/me')
+      .then(res => setUserName(res.data.full_name.toUpperCase()))
+      .catch(() => {});
 
-    // Get user name from token
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      setUserName(payload.sub.split('@')[0].toUpperCase());
-    } catch {}
-
-    fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/bookings/my`, {
-      headers: { "Authorization": `Bearer ${token}` }
-    })
-    .then(res => res.json())
-    .then(data => {
-      const found = data.find((b: any) => b.id === Number(id));
-      if (found) setBooking(found);
-      setLoading(false);
-    })
-    .catch(() => setLoading(false));
-  }, [id, router]);
+    // Bronlash ma'lumotlarini olish
+    apiClient.get('/bookings/my')
+      .then(res => {
+        const found = res.data.find((b: any) => b.id === Number(id));
+        if (found) setBooking(found);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, [id]);
 
   const handlePrint = () => {
     window.print();

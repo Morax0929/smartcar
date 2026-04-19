@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Plus, Trash2, TrendingUp, Car, DollarSign, Users, Download, Map } from "lucide-react";
 import Link from "next/link";
 import { AIPriceChart } from "@/components/dashboard/AIChart";
+import { apiClient } from "@/lib/api";
 import Cookies from "js-cookie";
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
@@ -38,10 +39,14 @@ export default function AdminDashboard() {
   const token = typeof window !== "undefined" ? Cookies.get("access_token") : "";
 
   const fetchCars = async () => {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/cars/`);
-    const data = await res.json();
-    setCars(data);
-    setLoading(false);
+    try {
+      const res = await apiClient.get('/cars/');
+      setCars(res.data);
+    } catch (err) {
+      console.error("Mashinalarni yuklashda xatolik");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDownloadPDF = async () => {
@@ -71,16 +76,10 @@ export default function AdminDashboard() {
     formData.append("file", file);
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/upload/image`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData,
+      const res = await apiClient.post('/upload/image', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
-
-      if (!res.ok) throw new Error("Yuklashda xatolik");
-
-      const data = await res.json();
-      setNewCar({ ...newCar, image_url: data.url });
+      setNewCar({ ...newCar, image_url: res.data.url });
     } catch (err) {
       alert("Rasm yuklashda xatolik yuz berdi");
       console.error(err);
@@ -95,26 +94,27 @@ export default function AdminDashboard() {
       alert("Iltimos, avval rasm yuklang");
       return;
     }
-    await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/cars/`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-      body: JSON.stringify(newCar),
-    });
-    setNewCar({
-      name: "", brand: "", category: "Comfort",
-      price_per_day: 0, image_url: "", year: 2024, description: ""
-    });
-    setShowForm(false);
-    fetchCars();
+    try {
+      await apiClient.post('/cars/', newCar);
+      setNewCar({
+        name: "", brand: "", category: "Comfort",
+        price_per_day: 0, image_url: "", year: 2024, description: ""
+      });
+      setShowForm(false);
+      fetchCars();
+    } catch (err) {
+      alert("Mashina qo'shishda xatolik yuz berdi");
+    }
   };
 
   const deleteCar = async (id: number) => {
     if (!confirm("Bu mashinani o'chirishni tasdiqlaysizmi?")) return;
-    await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/cars/${id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    fetchCars();
+    try {
+      await apiClient.delete(`/cars/${id}`);
+      fetchCars();
+    } catch (err) {
+      alert("O'chirishda xatolik yuz berdi");
+    }
   };
 
   const [stats, setStats] = useState([
@@ -126,11 +126,8 @@ export default function AdminDashboard() {
 
   const fetchStats = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/bookings/all`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (!res.ok) return;
-      const bookings = await res.json();
+      const res = await apiClient.get('/bookings/all');
+      const bookings = res.data;
       
       
       const totalProfit = bookings.reduce((acc: number, b: any) => acc + (b.payment_status === 'paid' ? b.total_price : 0), 0);

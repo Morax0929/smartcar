@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { CreditCard, ShieldCheck, Loader2, Banknote, CalendarDays, KeyRound } from "lucide-react";
 import Cookies from "js-cookie";
+import { apiClient } from "@/lib/api";
 
 export default function PaymentPage() {
   const { id } = useParams();
@@ -19,12 +20,9 @@ export default function PaymentPage() {
   useEffect(() => {
     // Bronni yuklash (FAQAT total price va mashina nomini ko'rsatish uchun)
     const fetchBooking = async () => {
-      const token = Cookies.get("access_token");
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/bookings/my`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        const data = await res.json();
+        const res = await apiClient.get('/bookings/my');
+        const data = res.data;
         const currentBooking = data.find((b: any) => b.id === Number(id));
         setBooking(currentBooking);
       } catch (err) {
@@ -38,21 +36,11 @@ export default function PaymentPage() {
     e.preventDefault();
     setIsProcessing(true);
 
-    const token = Cookies.get("access_token");
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/bookings/${id}/pay`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          method,
-          card_number: method === "card" ? cardNumber : "8600000000000000" // Simulated for other methods
-        })
+      await apiClient.post(`/bookings/${id}/pay`, {
+        method,
+        card_number: method === "card" ? cardNumber : "8600000000000000" // Simulated for other methods
       });
-
-      if (!res.ok) throw new Error("Karta raqami noto'g'ri");
 
       setIsSuccess(true);
       setTimeout(() => {

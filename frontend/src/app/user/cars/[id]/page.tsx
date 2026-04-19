@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Cookies from "js-cookie";
+import { apiClient } from "@/lib/api";
 
 interface Car {
   id: number;
@@ -43,13 +44,9 @@ export default function CarDetailPage() {
   const [paymentSuccess, setPaymentSuccess] = useState(false);
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/cars/${id}`)
+    apiClient.get(`/cars/${id}`)
       .then(res => {
-        if (!res.ok) throw new Error("Server xatoligi");
-        return res.json();
-      })
-      .then(data => {
-        setCar(data);
+        setCar(res.data);
         setLoading(false);
       })
       .catch(() => {
@@ -76,29 +73,18 @@ export default function CarDetailPage() {
     }
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/bookings/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          car_id: Number(id),
-          start_date: new Date(startDate).toISOString(),
-          end_date: new Date(endDate).toISOString(),
-          total_price: totalPrice
-        })
+      const res = await apiClient.post('/bookings/', {
+        car_id: Number(id),
+        start_date: new Date(startDate).toISOString(),
+        end_date: new Date(endDate).toISOString(),
+        total_price: totalPrice
       });
       
-      const data = await res.json();
-      if (res.ok) {
-        setBookingId(data.id);
-        setShowPayment(true);
-      } else {
-        alert(data.detail || "Xatolik yuz berdi");
-      }
-    } catch (err) {
-      alert("Server bilan aloqa uzildi");
+      setBookingId(res.data.id);
+      setShowPayment(true);
+    } catch (err: any) {
+      const errorMsg = err.response?.data?.detail || "Xatolik yuz berdi";
+      alert(errorMsg);
     }
   };
 
@@ -109,31 +95,20 @@ export default function CarDetailPage() {
     // Simulate processing
     setTimeout(async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/bookings/${bookingId}/pay`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            method: paymentMethod,
-            card_number: cardNumber,
-            expiry,
-            cvv
-          })
+        await apiClient.post(`/bookings/${bookingId}/pay`, {
+          method: paymentMethod,
+          card_number: cardNumber,
+          expiry,
+          cvv
         });
         
-        if (res.ok) {
-          setPaymentSuccess(true);
-          setTimeout(() => {
-            router.push("/user/bookings");
-          }, 2000);
-        } else {
-          const data = await res.json();
-          alert(data.detail || "To'lovda xatolik");
-        }
-      } catch (err) {
-        alert("To'lov serveri bilan aloqa yo'q");
+        setPaymentSuccess(true);
+        setTimeout(() => {
+          router.push("/user/bookings");
+        }, 2000);
+      } catch (err: any) {
+        const errorMsg = err.response?.data?.detail || "To'lovda xatolik";
+        alert(errorMsg);
       } finally {
         setIsPaying(false);
       }

@@ -6,6 +6,7 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { Car } from "lucide-react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { apiClient } from "@/lib/api";
 
 // Nukus markazi koordinatalari
 const NUKUS_CENTER: [number, number] = [42.4602, 59.6179];
@@ -35,13 +36,9 @@ export default function LiveMap() {
     // API orqali bron qilingan mashinalarni olish simulyatsiyasi
     const fetchActiveCars = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/bookings/all`, {
-          headers: {
-            Authorization: `Bearer ${typeof window !== 'undefined' ? localStorage.getItem('access_token') || document.cookie.replace(/(?:(?:^|.*;\s*)access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1") : ''}`
-          }
-        });
-        if (res.ok) {
-          const bookings = await res.json();
+        const res = await apiClient.get('/bookings/all');
+        if (res.data) {
+          const bookings = res.data;
           // Faqat tasdiqlangan (ijaradagi) mashinalar uchun
           const active = bookings.filter((b: any) => b.status === "confirmed");
           

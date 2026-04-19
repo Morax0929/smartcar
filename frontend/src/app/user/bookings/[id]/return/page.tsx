@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { AlertTriangle, UploadCloud, CheckCircle2, Car as CarIcon, Loader2 } from "lucide-react";
 import Image from "next/image";
+import { apiClient } from "@/lib/api";
 
 interface DamageDetail {
   confidence: number;
@@ -47,13 +48,10 @@ export default function CarReturnPage() {
     formData.append("file", photo);
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/damage/analyze`, {
-        method: "POST",
-        body: formData,
+      const res = await apiClient.post('/damage/analyze', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
-      
-      const data = await res.json();
-      setResult(data);
+      setResult(res.data);
     } catch (err) {
       console.error("Analysis failed", err);
     } finally {

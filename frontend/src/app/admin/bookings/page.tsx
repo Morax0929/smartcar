@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Search, Calendar, ChevronRight, CheckCircle2, XCircle, Clock, MoreVertical, RefreshCcw } from "lucide-react";
 import Cookies from "js-cookie";
+import { apiClient } from "@/lib/api";
 
 interface Booking {
   id: number;
@@ -25,13 +26,9 @@ export default function AdminBookings() {
 
   const fetchBookings = async () => {
     setLoading(true);
-    const token = Cookies.get("access_token");
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/bookings/all`, {
-        headers: { "Authorization": `Bearer ${token}` }
-      });
-      const data = await res.json();
-      if (res.ok) setBookings(data);
+      const res = await apiClient.get('/bookings/all');
+      setBookings(res.data);
     } catch (error) {
       console.error("Buyurtmalarni yuklashda xatolik");
     } finally {
@@ -44,15 +41,9 @@ export default function AdminBookings() {
   }, []);
 
   const updateStatus = async (id: number, status: string) => {
-    const token = Cookies.get("access_token");
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/bookings/${id}/status?new_status=${status}`, {
-        method: "PUT",
-        headers: { "Authorization": `Bearer ${token}` }
-      });
-      if (res.ok) {
-        setBookings(bookings.map(f => f.id === id ? { ...f, status } : f));
-      }
+      await apiClient.put(`/bookings/${id}/status?new_status=${status}`);
+      setBookings(bookings.map(f => f.id === id ? { ...f, status } : f));
     } catch (error) {
       alert("Statusni o'zgartirishda xatolik");
     }

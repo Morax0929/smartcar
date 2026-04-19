@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Terminal, Bot, Settings2 } from "lucide-react";
+import { apiClient } from "@/lib/api";
 
 export default function AdminAIAgent() {
   const [command, setCommand] = useState("");
@@ -21,12 +22,8 @@ export default function AdminAIAgent() {
     setLogs(prev => [...prev, { type: 'ai', text: `Tahlil qilinmoqda: "${currentCmd}"...` }]);
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/ai/agent`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ command: currentCmd })
-      });
-      const data = await res.json();
+      const res = await apiClient.post('/ai/agent', { command: currentCmd });
+      const data = res.data;
       
       setLogs(prev => prev.map(log => log.text === `Tahlil qilinmoqda: "${currentCmd}"...` ? { ...log, text: log.text + (data.success ? " ✅" : " ❌") } : log));
       

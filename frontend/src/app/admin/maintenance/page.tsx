@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Wrench, ShieldAlert, CheckCircle2, AlertTriangle, Gauge, ArrowRight } from "lucide-react";
+import { apiClient } from "@/lib/api";
 
 interface Car {
   id: number;
@@ -16,10 +17,9 @@ export default function AdminMaintenance() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/cars`)
-      .then(res => res.json())
-      .then(data => {
-        setCars(data);
+    apiClient.get('/cars')
+      .then(res => {
+        setCars(res.data);
         setLoading(false);
       })
       .catch(() => setLoading(false));

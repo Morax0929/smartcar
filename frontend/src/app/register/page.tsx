@@ -62,7 +62,6 @@ export default function Register() {
       
       <div className="relative z-10 w-full max-w-md bg-white p-8 rounded-3xl shadow-2xl border border-white/20 hover:shadow-[0_0_40px_rgba(245,158,11,0.1)] transition-shadow">
         <div className="flex justify-center items-center mb-6">
-          <ShieldAlert className="h-8 w-8 text-amber-500 mr-2" />
           <span className="font-bold text-2xl text-slate-900">SmartCar AI</span>
         </div>
         

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Search, Star, Users, Fuel, Settings2, SlidersHorizontal, Sparkles, X, ChevronRight } from "lucide-react";
+import { apiClient } from "@/lib/api";
 
 interface Car {
   id: number;
@@ -16,7 +17,7 @@ interface Car {
   year: number;
 }
 
-const FUEL_TYPES = ["Benzin", "Dizel", "Elektr", "Gibrid"];
+
 
 export default function UserCarsCatalog() {
   const [cars, setCars] = useState<Car[]>([]);
@@ -29,9 +30,8 @@ export default function UserCarsCatalog() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/cars/`)
-      .then(res => res.json())
-      .then(data => { setCars(data); setLoading(false); })
+    apiClient.get('/cars/')
+      .then(res => { setCars(res.data); setLoading(false); })
       .catch(() => setLoading(false));
   }, []);
 
