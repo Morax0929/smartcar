@@ -35,8 +35,7 @@ export default function Register() {
     setLoading(true);
 
     try {
-      // 1-Qadam: API ga so'rov jo'natish
-      const dataPayload = { ...formData };
+      const dataPayload: any = { ...formData };
       if (!dataPayload.admin_secret_code) {
         delete dataPayload.admin_secret_code; // Bo'sh bo'lsa JSON ga kiritmaymiz
       }
