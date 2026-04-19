@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { Home, CarFront, User, LogOut, ShieldAlert, CalendarClock, Files } from 'lucide-react';
+import { Home, CarFront, Car, User, LogOut, CalendarClock, Files } from 'lucide-react';
 import Chatbot from '@/components/chat/Chatbot';
 import Cookies from 'js-cookie';
 
@@ -60,7 +60,9 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
       <aside className="w-60 bg-slate-900 border-r border-slate-800 text-slate-300 flex flex-col shrink-0">
         {/* Logo */}
         <Link href="/" className="h-16 flex items-center px-5 border-b border-slate-800 text-white hover:bg-slate-800 transition-colors">
-          <ShieldAlert className="h-5 w-5 text-amber-500 mr-2" />
+          <div className="bg-gray-900 rounded-md p-1.5 flex items-center justify-center mr-2">
+            <Car className="h-4 w-4 text-amber-500" />
+          </div>
           <span className="font-bold text-base">SmartCar AI</span>
         </Link>
 
