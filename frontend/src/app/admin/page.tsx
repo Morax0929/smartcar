@@ -179,13 +179,16 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mb-6">
-        <h2 className="text-xl font-black text-slate-900">Boshqaruv Paneli</h2>
-        <div className="flex gap-3">
-          <Link href="/admin/map" className="bg-slate-900 hover:bg-slate-800 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-sm transition-colors flex items-center gap-2">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-5 rounded-2xl shadow-sm border border-slate-100 mb-6 gap-4">
+        <div>
+          <h2 className="text-xl font-black text-slate-900">Boshqaruv Paneli</h2>
+          <p className="text-xs text-slate-500 font-medium">Barcha tizim statistikalari va boshqaruv</p>
+        </div>
+        <div className="flex flex-wrap gap-3 w-full sm:w-auto">
+          <Link href="/admin/map" className="flex-1 sm:flex-none justify-center bg-slate-900 hover:bg-slate-800 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-sm transition-colors flex items-center gap-2">
             <Map className="w-4 h-4" /> Jonli Xarita
           </Link>
-          <button onClick={handleDownloadPDF} className="bg-amber-500 hover:bg-amber-600 text-slate-900 px-5 py-2.5 rounded-xl text-sm font-bold shadow-sm shadow-amber-500/20 transition-colors flex items-center gap-2">
+          <button onClick={handleDownloadPDF} className="flex-1 sm:flex-none justify-center bg-amber-500 hover:bg-amber-600 text-slate-900 px-5 py-2.5 rounded-xl text-sm font-bold shadow-sm shadow-amber-500/20 transition-colors flex items-center gap-2">
             <Download className="w-4 h-4" /> PDF Hisobot
           </button>
         </div>
@@ -193,13 +196,13 @@ export default function AdminDashboard() {
 
       <div id="report-content" className="space-y-6 bg-slate-50/50 p-2 -m-2 rounded-3xl">
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((s, i) => (
           <div key={i} className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex items-center space-x-4">
-            <div className={`p-3 ${s.bg} ${s.color} rounded-xl`}><s.icon className="w-5 h-5" /></div>
-            <div>
-              <p className="text-xs font-medium text-slate-500">{s.label}</p>
-              <h3 className="text-xl font-bold text-slate-900">{s.value}</h3>
+            <div className={`p-3 ${s.bg} ${s.color} rounded-xl shrink-0`}><s.icon className="w-5 h-5" /></div>
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest truncate">{s.label}</p>
+              <h3 className="text-lg sm:text-xl font-black text-slate-900">{s.value}</h3>
             </div>
           </div>
         ))}
@@ -207,75 +210,96 @@ export default function AdminDashboard() {
 
       {/* AI Chart */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-          <div className="flex justify-between items-center mb-2">
+        <div className="lg:col-span-2 bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-100 h-full">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-3">
             <div>
               <h3 className="text-lg font-bold text-slate-900">AI Dinamik Narxlash</h3>
-              <p className="text-sm text-slate-500">Soatlik talab va optimizasiya qilingan narx</p>
+              <p className="text-sm text-slate-500">Soatlik talab va narx optimizasiyasi</p>
             </div>
-            <span className="bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
+            <span className="bg-green-100 text-green-700 text-[10px] font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5">
               <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div> Active AI
             </span>
           </div>
-          <AIPriceChart />
+          <div className="h-[250px] sm:h-[300px]">
+            <AIPriceChart />
+          </div>
         </div>
-        <div className="bg-slate-900 p-6 rounded-2xl text-white flex flex-col justify-between">
-          <h3 className="text-lg font-bold mb-4">AI Xulosasi</h3>
-          <ul className="space-y-3 flex-1">
+        <div className="bg-slate-900 p-6 rounded-2xl text-white flex flex-col justify-between shadow-xl">
+          <h3 className="text-lg font-bold mb-4 border-b border-white/10 pb-4">AI Xulosasi</h3>
+          <ul className="space-y-4 flex-1">
             {aiSummary.map((msg, i) => (
-              <li key={i} className="flex items-start">
-                <div className="w-7 h-7 rounded-full bg-amber-500/20 text-amber-500 font-bold flex items-center justify-center mr-3 shrink-0 text-sm">{i+1}</div>
-                <p className="text-slate-300 text-sm leading-relaxed">{msg}</p>
+              <li key={i} className="flex items-start group">
+                <div className="w-6 h-6 rounded-lg bg-amber-500 text-slate-900 font-black flex items-center justify-center mr-3 shrink-0 text-[10px] mt-0.5 group-hover:scale-110 transition-transform">{i+1}</div>
+                <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">{msg}</p>
               </li>
             ))}
           </ul>
-          <a href="/admin/ai-agent" className="w-full mt-5 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold py-2.5 rounded-xl transition-colors text-center block text-sm">
-            AI Komandirni ochish
-          </a>
+          <Link href="/admin/ai-agent" className="w-full mt-6 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold py-3 rounded-xl transition-all text-center block text-sm shadow-lg shadow-amber-500/20 active:scale-[0.98]">
+            AI Komandirni boshqarish
+          </Link>
         </div>
       </div>
 
       {/* Cars Table */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-100">
-        <div className="p-5 border-b border-slate-100 flex justify-between items-center">
-          <h3 className="text-lg font-bold text-slate-900">Avtomobillar Ro'yxati</h3>
-          <button onClick={() => setShowForm(!showForm)} className="bg-slate-900 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-slate-800 transition">
-            <Plus className="w-4 h-4" /> Yangi Qo'shish
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+        <div className="p-5 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h3 className="text-lg font-bold text-slate-900">Avtomobillar</h3>
+            <p className="text-xs text-slate-500 font-medium mt-0.5">Barcha transportlarni boshqarish</p>
+          </div>
+          <button onClick={() => setShowForm(!showForm)} className="w-full sm:w-auto bg-slate-900 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-slate-800 transition shadow-lg shadow-slate-900/10">
+            <Plus className="w-4 h-4" /> {showForm ? 'Yopish' : 'Yangi Qo\'shish'}
           </button>
         </div>
 
         {/* Add form */}
         {showForm && (
-          <form onSubmit={addCar} className="p-5 bg-amber-50 border-b border-amber-100 space-y-4">
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-              <input required value={newCar.brand} onChange={e => setNewCar({...newCar, brand: e.target.value})} placeholder="Brand (Chevrolet)" className="col-span-1 px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none" />
-              <input required value={newCar.name} onChange={e => setNewCar({...newCar, name: e.target.value})} placeholder="Nomi (Malibu)" className="col-span-1 px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none" />
-              <select value={newCar.category} onChange={e => setNewCar({...newCar, category: e.target.value})} className="col-span-1 px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none bg-white">
-                <option>Comfort</option><option>Premium</option><option>Krossover</option>
-              </select>
-              <input required type="number" value={newCar.price_per_day} onChange={e => setNewCar({...newCar, price_per_day: +e.target.value})} placeholder="Narx (UZS)" className="col-span-1 px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none" />
-              <input type="number" value={newCar.year} onChange={e => setNewCar({...newCar, year: +e.target.value})} placeholder="Yil" className="col-span-1 px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none" />
+          <form onSubmit={addCar} className="p-5 bg-amber-50/50 border-b border-amber-100 space-y-4 animate-in slide-in-from-top duration-300">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Brend</label>
+                <input required value={newCar.brand} onChange={e => setNewCar({...newCar, brand: e.target.value})} placeholder="Masalan: Chevrolet" className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm outline-none focus:border-amber-500 transition-colors bg-white" />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Model</label>
+                <input required value={newCar.name} onChange={e => setNewCar({...newCar, name: e.target.value})} placeholder="Masalan: Malibu" className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm outline-none focus:border-amber-500 transition-colors bg-white" />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Toifa</label>
+                <select value={newCar.category} onChange={e => setNewCar({...newCar, category: e.target.value})} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm outline-none bg-white focus:border-amber-500 transition-colors">
+                  <option>Comfort</option><option>Premium</option><option>Krossover</option><option>Ekonom</option>
+                </select>
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Kunlik Narx (UZS)</label>
+                <input required type="number" value={newCar.price_per_day} onChange={e => setNewCar({...newCar, price_per_day: +e.target.value})} placeholder="0" className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm outline-none focus:border-amber-500 transition-colors bg-white" />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Yil</label>
+                <input type="number" value={newCar.year} onChange={e => setNewCar({...newCar, year: +e.target.value})} placeholder="2024" className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm outline-none focus:border-amber-500 transition-colors bg-white" />
+              </div>
               
-              <div className="col-span-1">
-                <label className={`flex items-center justify-center border-2 border-dashed rounded-lg p-2 cursor-pointer transition-colors ${newCar.image_url ? 'border-green-300 bg-green-50' : 'border-slate-300 hover:border-amber-400'}`}>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Mashina rasmi</label>
+                <label className={`flex items-center justify-center border-2 border-dashed rounded-xl p-2 cursor-pointer transition-all ${newCar.image_url ? 'border-green-300 bg-green-50' : 'border-slate-300 hover:border-amber-400 bg-white'}`}>
                   <input type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
                   {isUploading ? (
-                    <span className="text-xs text-slate-500 animate-pulse">Yuklanmoqda...</span>
+                    <span className="text-xs text-slate-500 animate-pulse font-bold">Yuklanmoqda...</span>
                   ) : newCar.image_url ? (
                     <div className="flex items-center gap-2">
-                       <img src={newCar.image_url} alt="Preview" className="w-6 h-6 object-cover rounded" />
-                       <span className="text-[10px] text-green-600 font-bold">Rasm yuklandi</span>
+                       <img src={newCar.image_url} alt="Preview" className="w-6 h-6 object-cover rounded shadow-sm" />
+                       <span className="text-[10px] text-green-600 font-extrabold uppercase tracking-tighter">Rasm tayyor</span>
                     </div>
                   ) : (
-                    <span className="text-xs text-slate-500">Rasm yuklash</span>
+                    <span className="text-xs text-slate-500 font-bold uppercase tracking-tighter">Rasm yuklash</span>
                   )}
                 </label>
               </div>
             </div>
-            <div className="flex gap-3">
-              <input value={newCar.description} onChange={e => setNewCar({...newCar, description: e.target.value})} placeholder="Tavsif (ixtiyoriy)" className="flex-1 px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none" />
-              <button type="submit" disabled={isUploading} className="bg-amber-500 hover:bg-amber-600 disabled:bg-slate-300 text-slate-900 font-bold px-8 py-2 rounded-lg text-sm transition">
-                Saqlash
+            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+              <input value={newCar.description} onChange={e => setNewCar({...newCar, description: e.target.value})} placeholder="Qisqacha tavsif..." className="flex-1 px-4 py-3 rounded-xl border border-slate-200 text-sm outline-none bg-white focus:border-amber-500 transition-colors" />
+              <button type="submit" disabled={isUploading} className="bg-slate-900 hover:bg-amber-500 disabled:bg-slate-300 text-white hover:text-slate-900 font-black px-10 py-3 rounded-xl text-xs uppercase tracking-widest transition-all shadow-lg active:scale-95">
+                Qo'shish
               </button>
             </div>
           </form>

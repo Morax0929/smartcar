@@ -69,9 +69,9 @@ export default function HomePage() {
 
             {/* Desktop Links */}
             <div className="hidden md:flex items-center space-x-8">
-              <Link href="/katalog" className="text-gray-600 hover:text-gray-900 font-medium transition">Katalog</Link>
-              <Link href="/dashboard" className="text-gray-600 hover:text-gray-900 font-medium transition">Dashboard</Link>
-              <Link href="/dashboard/my-bookings" className="text-gray-600 hover:text-gray-900 font-medium transition">Buyurtmalarim</Link>
+              <Link href="/user/cars" className="text-gray-600 hover:text-gray-900 font-medium transition">Katalog</Link>
+              <Link href="/user" className="text-gray-600 hover:text-gray-900 font-medium transition">Dashboard</Link>
+              <Link href="/user/bookings" className="text-gray-600 hover:text-gray-900 font-medium transition">Buyurtmalarim</Link>
             </div>
 
             {/* Desktop Auth */}
@@ -98,13 +98,13 @@ export default function HomePage() {
         {/* Mobile Dropdown Menu */}
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-gray-100 bg-white px-4 py-4 flex flex-col gap-3 animate-fade-in">
-            <Link href="/katalog" className="py-2.5 text-gray-700 font-medium border-b border-gray-50" onClick={() => setMobileMenuOpen(false)}>
+            <Link href="/user/cars" className="py-2.5 text-gray-700 font-medium border-b border-gray-50" onClick={() => setMobileMenuOpen(false)}>
               Katalog
             </Link>
-            <Link href="/dashboard" className="py-2.5 text-gray-700 font-medium border-b border-gray-50" onClick={() => setMobileMenuOpen(false)}>
+            <Link href="/user" className="py-2.5 text-gray-700 font-medium border-b border-gray-50" onClick={() => setMobileMenuOpen(false)}>
               Dashboard
             </Link>
-            <Link href="/dashboard/my-bookings" className="py-2.5 text-gray-700 font-medium border-b border-gray-50" onClick={() => setMobileMenuOpen(false)}>
+            <Link href="/user/bookings" className="py-2.5 text-gray-700 font-medium border-b border-gray-50" onClick={() => setMobileMenuOpen(false)}>
               Buyurtmalarim
             </Link>
             <div className="flex gap-3 pt-2">
@@ -234,19 +234,38 @@ export default function HomePage() {
                 Eng ko'p bron qilinadigan avtomobillarimiz — narxlar AI tomonidan yangilanadi.
               </p>
             </div>
-            <Link href="/katalog" className="hidden md:inline-flex px-6 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-50 hover:border-gray-300 transition">
+            <Link href="/user/cars" className="hidden md:inline-flex px-6 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-50 hover:border-gray-300 transition">
               Hammasini ko'rish
             </Link>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-8">
-            <CarCard brand="Chevrolet" model="Damas" price="130,000" hasAiPrice />
-            <CarCard brand="Chevrolet" model="Lacetti" price="160,000" hasAiPrice isActive />
-            <CarCard brand="Chevrolet" model="Spark" price="120,000" hasAiPrice />
+            <CarCard 
+              brand="Chevrolet" 
+              model="Damas" 
+              price="130,000" 
+              image="https://images.unsplash.com/photo-1469854523086-cc02fe5d8df0?w=800&q=80"
+              hasAiPrice 
+            />
+            <CarCard 
+              brand="Chevrolet" 
+              model="Lacetti" 
+              price="160,000" 
+              image="https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=800&q=80"
+              hasAiPrice 
+              isActive 
+            />
+            <CarCard 
+              brand="Chevrolet" 
+              model="Spark" 
+              price="120,000" 
+              image="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&q=80"
+              hasAiPrice 
+            />
           </div>
 
           <div className="mt-6 text-center md:hidden">
-            <Link href="/katalog" className="block w-full px-6 py-3 bg-white border border-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition">
+            <Link href="/user/cars" className="block w-full px-6 py-3 bg-white border border-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition">
               Hammasini ko'rish
             </Link>
           </div>
@@ -376,7 +395,7 @@ export default function HomePage() {
   )
 }
 
-function CarCard({ brand, model, price, hasAiPrice, isActive = false }: any) {
+function CarCard({ brand, model, price, image, hasAiPrice, isActive = false }: any) {
   return (
     <div className={`bg-white rounded-2xl overflow-hidden transition-all duration-300 border-2 flex flex-col h-full
       ${isActive ? 'border-brand-yellow shadow-xl shadow-brand-yellow/10' : 'border-gray-100 shadow-sm hover:border-gray-300 hover:shadow-md'}`}>
@@ -384,19 +403,27 @@ function CarCard({ brand, model, price, hasAiPrice, isActive = false }: any) {
       <div className="relative pt-4 px-4 pb-2 bg-gray-50 flex-1 flex flex-col justify-center items-center group">
         <div className="absolute top-0 left-4 right-4 h-1 bg-brand-yellow rounded-b-md opacity-30 group-hover:opacity-100 transition-opacity" />
         {hasAiPrice && (
-          <div className="absolute top-4 right-4 bg-brand-yellow text-white text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1 shadow-sm">
+          <div className="absolute top-4 right-4 bg-brand-yellow text-white text-[10px] sm:text-xs font-bold px-2 py-1 sm:px-3 sm:py-1.5 rounded-full flex items-center gap-1 shadow-sm z-10">
             <Brain className="h-3 w-3" /> AI Narx
           </div>
         )}
 
-        <div className="h-40 md:h-48 w-full flex items-center justify-center my-4 md:my-6">
-          <div className="w-56 md:w-64 h-28 md:h-32 bg-gray-200 rounded-xl flex items-center justify-center">
-            <span className="text-gray-400 font-medium rotate-[-15deg] text-sm">{model} Image</span>
-          </div>
+        <div className="h-40 md:h-48 w-full flex items-center justify-center my-4 md:my-6 relative overflow-hidden rounded-xl">
+          {image ? (
+            <img 
+              src={image} 
+              alt={`${brand} ${model}`} 
+              className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+            />
+          ) : (
+            <div className="w-56 md:w-64 h-28 md:h-32 bg-gray-200 rounded-xl flex items-center justify-center">
+              <span className="text-gray-400 font-medium rotate-[-15deg] text-sm">{model} Image</span>
+            </div>
+          )}
         </div>
 
         <div className="absolute bottom-4 left-4">
-          <span className="inline-block bg-brand-yellow text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
+          <span className="inline-block bg-brand-yellow text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm">
             {brand}
           </span>
         </div>
@@ -405,12 +432,12 @@ function CarCard({ brand, model, price, hasAiPrice, isActive = false }: any) {
       <div className="p-4 md:p-6 border-t border-gray-100 bg-white">
         <div className="flex justify-between items-end">
           <div>
-            <p className="text-sm text-gray-500 font-medium mb-1">{brand}</p>
-            <h3 className="text-xl md:text-2xl font-bold text-gray-900">{model}</h3>
+            <p className="text-[10px] sm:text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">{brand}</p>
+            <h3 className="text-lg md:text-2xl font-bold text-gray-900 leading-none">{model}</h3>
           </div>
           <div className="text-right">
-            <div className="text-lg md:text-xl font-bold text-gray-900">{price} UZS</div>
-            <div className="text-sm text-gray-500 font-medium">/ kun</div>
+            <div className="text-lg md:text-xl font-extrabold text-gray-900">{price} UZS</div>
+            <div className="text-[10px] sm:text-xs text-gray-500 font-medium">/ kun</div>
           </div>
         </div>
       </div>

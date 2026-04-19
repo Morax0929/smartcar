@@ -149,51 +149,53 @@ export default function CarDetailPage() {
         <ArrowLeft className="w-4 h-4" /> Orqaga qaytish
       </button>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
         {/* LEFT: Image and Info */}
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100">
-            <div className="relative h-[400px]">
+            <div className="relative h-64 sm:h-80 md:h-[400px]">
                <img src={car.image_url} alt={car.name} className="w-full h-full object-cover" />
-               <div className="absolute top-6 left-6 bg-slate-900/80 backdrop-blur-md text-white px-4 py-2 rounded-2xl text-sm font-bold">
+               <div className="absolute top-4 left-4 sm:top-6 sm:left-6 bg-slate-900/80 backdrop-blur-md text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl sm:rounded-2xl text-[10px] sm:text-sm font-bold">
                  {car.year} yilda ishlab chiqarilgan
                </div>
             </div>
-            <div className="p-8">
-               <div className="flex justify-between items-start mb-4">
+            <div className="p-5 sm:p-8">
+               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-6 gap-4">
                  <div>
-                    <p className="text-amber-600 font-bold uppercase tracking-widest text-xs mb-1">{car.brand} • {car.category}</p>
-                    <h1 className="text-4xl font-black text-slate-900">{car.name}</h1>
+                    <p className="text-amber-600 font-bold uppercase tracking-widest text-[10px] sm:text-xs mb-1">{car.brand} • {car.category}</p>
+                    <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 leading-tight">{car.name}</h1>
                  </div>
-                 <div className="bg-amber-50 px-4 py-2 rounded-2xl flex items-center gap-2">
+                 <div className="bg-amber-50 px-4 py-2.5 rounded-2xl flex items-center gap-2 self-start">
                     <Star className="w-5 h-5 fill-amber-500 text-amber-500" />
                     <span className="text-lg font-bold text-slate-900">4.9</span>
-                    <span className="text-slate-400 text-sm">(12 ta sharh)</span>
+                    <span className="text-slate-400 text-sm hidden xs:inline">(12 ta sharh)</span>
                  </div>
                </div>
                
-               <p className="text-slate-600 leading-relaxed text-lg mb-8">
+               <p className="text-slate-600 leading-relaxed text-base sm:text-lg mb-8">
                  {car.description || "Ushbu avtomobil haqida batafsil ma'lumot tez orada qo'shiladi. SmartCar AI tizimi orqali eng yaxshi narxlarda ijaraga oling."}
                </p>
 
-               <div className="grid grid-cols-3 gap-4">
+               <div className="grid grid-cols-1 xs:grid-cols-3 gap-3 sm:gap-4">
                  {[
                    { icon: Users, label: "Sig'im", value: "5 o'rindiq" },
                    { icon: Fuel, label: "Yoqilg'i", value: "Benzin / Gibrid" },
                    { icon: Settings2, label: "Transmissiya", value: "Avtomat" }
                  ].map((spec, i) => (
-                   <div key={i} className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                      <spec.icon className="w-5 h-5 text-slate-400 mb-2" />
-                      <p className="text-xs text-slate-400 font-bold uppercase">{spec.label}</p>
-                      <p className="text-slate-900 font-bold">{spec.value}</p>
+                   <div key={i} className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex xs:flex-col items-center xs:items-start gap-3 xs:gap-1">
+                      <spec.icon className="w-5 h-5 text-slate-400 mb-1 shrink-0" />
+                      <div>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">{spec.label}</p>
+                        <p className="text-slate-900 font-bold text-sm sm:text-base">{spec.value}</p>
+                      </div>
                    </div>
                  ))}
                </div>
             </div>
           </div>
           
-          <div className="bg-amber-50 border border-amber-100 rounded-3xl p-6 flex items-start gap-4">
-             <div className="bg-amber-500 p-3 rounded-2xl">
+          <div className="bg-amber-50 border border-amber-100 rounded-3xl p-5 sm:p-6 flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left">
+             <div className="bg-amber-500 p-3 rounded-2xl shrink-0">
                <ShieldCheck className="w-6 h-6 text-white" />
              </div>
              <div>
