@@ -40,7 +40,7 @@ module.exports = {
       min_uptime: "5s",
       env: {
         NODE_ENV: "development",
-        NEXT_PUBLIC_API_URL: "http://localhost:8000",
+        NEXT_PUBLIC_API_URL: "http://localhost:8000/api",
       },
       log_date_format: "YYYY-MM-DD HH:mm:ss",
       error_file: "../logs/frontend-error.log",
