@@ -32,8 +32,8 @@ export default function UserDashboard() {
     const fetchData = async () => {
       try {
         const [carsRes, reviewsRes] = await Promise.all([
-          fetch("http://localhost:8000/api/cars/available"),
-          fetch("http://localhost:8000/api/cars/1/reviews"),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/cars/available`),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/cars/1/reviews`),
         ]);
         const carsData = await carsRes.json();
         const reviewsData = await reviewsRes.json();

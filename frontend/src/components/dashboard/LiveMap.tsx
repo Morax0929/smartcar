@@ -35,7 +35,7 @@ export default function LiveMap() {
     // API orqali bron qilingan mashinalarni olish simulyatsiyasi
     const fetchActiveCars = async () => {
       try {
-        const res = await fetch("http://localhost:8000/api/bookings/all", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/bookings/all`, {
           headers: {
             Authorization: `Bearer ${typeof window !== 'undefined' ? localStorage.getItem('access_token') || document.cookie.replace(/(?:(?:^|.*;\s*)access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1") : ''}`
           }

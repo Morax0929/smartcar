@@ -38,7 +38,7 @@ export default function AdminDashboard() {
   const token = typeof window !== "undefined" ? Cookies.get("access_token") : "";
 
   const fetchCars = async () => {
-    const res = await fetch("http://localhost:8000/api/cars/");
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/cars/`);
     const data = await res.json();
     setCars(data);
     setLoading(false);
@@ -71,7 +71,7 @@ export default function AdminDashboard() {
     formData.append("file", file);
 
     try {
-      const res = await fetch("http://localhost:8000/api/upload/image", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/upload/image`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
@@ -95,7 +95,7 @@ export default function AdminDashboard() {
       alert("Iltimos, avval rasm yuklang");
       return;
     }
-    await fetch("http://localhost:8000/api/cars/", {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/cars/`, {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify(newCar),
@@ -110,7 +110,7 @@ export default function AdminDashboard() {
 
   const deleteCar = async (id: number) => {
     if (!confirm("Bu mashinani o'chirishni tasdiqlaysizmi?")) return;
-    await fetch(`http://localhost:8000/api/cars/${id}`, {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/cars/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -126,7 +126,7 @@ export default function AdminDashboard() {
 
   const fetchStats = async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/bookings/all", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/bookings/all`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (!res.ok) return;

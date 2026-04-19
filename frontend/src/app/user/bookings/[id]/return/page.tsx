@@ -47,7 +47,7 @@ export default function CarReturnPage() {
     formData.append("file", photo);
 
     try {
-      const res = await fetch("http://localhost:8000/api/damage/analyze", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/damage/analyze`, {
         method: "POST",
         body: formData,
       });

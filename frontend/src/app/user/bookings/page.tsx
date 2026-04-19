@@ -27,7 +27,7 @@ export default function UserBookings() {
       if (!token) return;
 
       try {
-        const res = await fetch("http://localhost:8000/api/bookings/my", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/bookings/my`, {
           headers: {
             "Authorization": `Bearer ${token}`
           }

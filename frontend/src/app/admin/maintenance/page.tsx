@@ -16,7 +16,7 @@ export default function AdminMaintenance() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/cars")
+    fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/cars`)
       .then(res => res.json())
       .then(data => {
         setCars(data);

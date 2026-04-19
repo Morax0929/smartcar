@@ -22,7 +22,7 @@ export default function UserDocuments() {
   const fetchDocuments = async () => {
     const token = Cookies.get("access_token");
     try {
-      const res = await fetch("http://localhost:8000/api/documents/my", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/documents/my`, {
         headers: { "Authorization": `Bearer ${token}` }
       });
       const data = await res.json();
@@ -48,7 +48,7 @@ export default function UserDocuments() {
     formData.append("file", file);
 
     try {
-      const res = await fetch(`http://localhost:8000/api/documents/upload?type=${type}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/documents/upload?type=${type}`, {
         method: "POST",
         headers: { "Authorization": `Bearer ${token}` },
         body: formData

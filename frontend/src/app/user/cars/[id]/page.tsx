@@ -43,7 +43,7 @@ export default function CarDetailPage() {
   const [paymentSuccess, setPaymentSuccess] = useState(false);
 
   useEffect(() => {
-    fetch(`http://localhost:8000/api/cars/${id}`)
+    fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/cars/${id}`)
       .then(res => {
         if (!res.ok) throw new Error("Server xatoligi");
         return res.json();
@@ -76,7 +76,7 @@ export default function CarDetailPage() {
     }
 
     try {
-      const res = await fetch("http://localhost:8000/api/bookings/", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/bookings/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -109,7 +109,7 @@ export default function CarDetailPage() {
     // Simulate processing
     setTimeout(async () => {
       try {
-        const res = await fetch(`http://localhost:8000/api/bookings/${bookingId}/pay`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/bookings/${bookingId}/pay`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

@@ -32,8 +32,8 @@ export default function AdminUsers() {
     const token = Cookies.get("access_token");
     try {
       const [usersRes, docsRes] = await Promise.all([
-        fetch("http://localhost:8000/api/auth/users", { headers: { "Authorization": `Bearer ${token}` } }),
-        fetch("http://localhost:8000/api/documents/all", { headers: { "Authorization": `Bearer ${token}` } })
+        fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/auth/users`, { headers: { "Authorization": `Bearer ${token}` } }),
+        fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/documents/all`, { headers: { "Authorization": `Bearer ${token}` } })
       ]);
       
       if (usersRes.ok) setUsers(await usersRes.json());
@@ -58,7 +58,7 @@ export default function AdminUsers() {
   const updateDocStatus = async (docId: number, status: string) => {
     const token = Cookies.get("access_token");
     try {
-      const res = await fetch(`http://localhost:8000/api/documents/${docId}/status?status=${status}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/documents/${docId}/status?status=${status}`, {
         method: "PUT",
         headers: { "Authorization": `Bearer ${token}` }
       });

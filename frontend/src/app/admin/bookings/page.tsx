@@ -27,7 +27,7 @@ export default function AdminBookings() {
     setLoading(true);
     const token = Cookies.get("access_token");
     try {
-      const res = await fetch("http://localhost:8000/api/bookings/all", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/bookings/all`, {
         headers: { "Authorization": `Bearer ${token}` }
       });
       const data = await res.json();
@@ -46,7 +46,7 @@ export default function AdminBookings() {
   const updateStatus = async (id: number, status: string) => {
     const token = Cookies.get("access_token");
     try {
-      const res = await fetch(`http://localhost:8000/api/bookings/${id}/status?new_status=${status}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/bookings/${id}/status?new_status=${status}`, {
         method: "PUT",
         headers: { "Authorization": `Bearer ${token}` }
       });

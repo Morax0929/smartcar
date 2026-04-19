@@ -35,7 +35,7 @@ export default function RentalAgreement() {
       setUserName(payload.sub.split('@')[0].toUpperCase());
     } catch {}
 
-    fetch(`http://localhost:8000/api/bookings/my`, {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"}/bookings/my`, {
       headers: { "Authorization": `Bearer ${token}` }
     })
     .then(res => res.json())

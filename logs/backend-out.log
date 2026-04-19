@@ -1,0 +1,43 @@
+2026-04-16 16:43:51: INFO:     127.0.0.1:55834 - "GET /api/cars/ HTTP/1.1" 200 OK
+2026-04-16 16:43:51: INFO:     127.0.0.1:53304 - "GET /api/cars/ HTTP/1.1" 200 OK
+2026-04-16 16:44:04: INFO:     127.0.0.1:59940 - "GET /docs HTTP/1.1" 200 OK
+2026-04-16 16:44:05: INFO:     127.0.0.1:59940 - "GET /openapi.json HTTP/1.1" 200 OK
+2026-04-16 16:45:19: INFO:     127.0.0.1:54858 - "OPTIONS /api/bookings/all HTTP/1.1" 200 OK
+2026-04-16 16:45:19: INFO:     127.0.0.1:60786 - "OPTIONS /api/bookings/all HTTP/1.1" 200 OK
+2026-04-16 16:45:19: INFO:     127.0.0.1:49182 - "GET /api/cars/ HTTP/1.1" 200 OK
+2026-04-16 16:45:19: INFO:     127.0.0.1:54858 - "GET /api/cars/ HTTP/1.1" 200 OK
+2026-04-16 16:45:19: INFO:     127.0.0.1:49182 - "GET /api/cars/ HTTP/1.1" 200 OK
+2026-04-16 16:45:19: INFO:     127.0.0.1:54858 - "GET /api/cars/ HTTP/1.1" 200 OK
+2026-04-16 16:45:19: INFO:     127.0.0.1:60786 - "GET /api/bookings/all HTTP/1.1" 200 OK
+2026-04-16 16:45:19: INFO:     127.0.0.1:54858 - "GET /api/bookings/all HTTP/1.1" 200 OK
+2026-04-16 16:45:37: INFO:     127.0.0.1:49667 - "GET /api/bookings/all HTTP/1.1" 200 OK
+2026-04-16 16:45:37: INFO:     127.0.0.1:49667 - "GET /api/bookings/all HTTP/1.1" 200 OK
+2026-04-16 16:45:45: INFO:     127.0.0.1:62945 - "GET /api/cars HTTP/1.1" 307 Temporary Redirect
+2026-04-16 16:45:45: INFO:     127.0.0.1:62945 - "GET /api/cars HTTP/1.1" 307 Temporary Redirect
+2026-04-16 16:45:45: INFO:     127.0.0.1:62945 - "GET /api/cars/ HTTP/1.1" 200 OK
+2026-04-16 16:45:45: INFO:     127.0.0.1:62945 - "GET /api/cars/ HTTP/1.1" 200 OK
+2026-04-16 16:46:07: INFO:     127.0.0.1:57687 - "OPTIONS /api/auth/users HTTP/1.1" 200 OK
+2026-04-16 16:46:07: INFO:     127.0.0.1:50060 - "OPTIONS /api/documents/all HTTP/1.1" 200 OK
+2026-04-16 16:46:07: INFO:     127.0.0.1:57687 - "OPTIONS /api/auth/users HTTP/1.1" 200 OK
+2026-04-16 16:46:07: INFO:     127.0.0.1:50060 - "OPTIONS /api/documents/all HTTP/1.1" 200 OK
+2026-04-16 16:46:07: INFO:     127.0.0.1:57687 - "GET /api/auth/users HTTP/1.1" 200 OK
+2026-04-16 16:46:07: INFO:     127.0.0.1:50060 - "GET /api/documents/all HTTP/1.1" 200 OK
+2026-04-16 16:46:07: INFO:     127.0.0.1:57687 - "GET /api/auth/users HTTP/1.1" 200 OK
+2026-04-16 16:46:07: INFO:     127.0.0.1:50060 - "GET /api/documents/all HTTP/1.1" 200 OK
+2026-04-16 16:46:11: INFO:     127.0.0.1:50060 - "GET /api/bookings/all HTTP/1.1" 200 OK
+2026-04-16 16:46:11: INFO:     127.0.0.1:57687 - "GET /api/bookings/all HTTP/1.1" 200 OK
+2026-04-16 16:46:15: INFO:     127.0.0.1:57687 - "GET /api/cars/ HTTP/1.1" 200 OK
+2026-04-16 16:46:15: INFO:     127.0.0.1:50060 - "GET /api/bookings/all HTTP/1.1" 200 OK
+2026-04-16 16:46:15: INFO:     127.0.0.1:52979 - "GET /api/cars/ HTTP/1.1" 200 OK
+2026-04-16 16:46:16: INFO:     127.0.0.1:57687 - "GET /api/bookings/all HTTP/1.1" 200 OK
+2026-04-16 16:46:16: INFO:     127.0.0.1:50060 - "GET /api/cars/ HTTP/1.1" 200 OK
+2026-04-16 16:46:16: INFO:     127.0.0.1:57687 - "GET /api/cars/ HTTP/1.1" 200 OK
+2026-04-16 16:47:48: INFO:     127.0.0.1:52438 - "OPTIONS /auth/login HTTP/1.1" 200 OK
+2026-04-16 16:47:48: INFO:     127.0.0.1:52438 - "POST /auth/login HTTP/1.1" 404 Not Found
+2026-04-16 16:47:51: INFO:     127.0.0.1:52438 - "POST /auth/login HTTP/1.1" 404 Not Found
+2026-04-16 16:48:28: INFO:     127.0.0.1:49281 - "OPTIONS /auth/register HTTP/1.1" 200 OK
+2026-04-16 16:48:28: INFO:     127.0.0.1:49281 - "POST /auth/register HTTP/1.1" 404 Not Found
+2026-04-16 16:48:38: INFO:     127.0.0.1:50760 - "POST /auth/register HTTP/1.1" 404 Not Found
+2026-04-16 16:52:55: INFO:     127.0.0.1:53973 - "GET /api HTTP/1.1" 404 Not Found
+2026-04-16 16:52:55: INFO:     127.0.0.1:53973 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+2026-04-16 16:53:33: INFO:     127.0.0.1:60931 - "GET /api HTTP/1.1" 404 Not Found
