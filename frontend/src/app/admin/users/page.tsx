@@ -55,6 +55,7 @@ export default function AdminUsers() {
     setShowModal(true);
   };
 
+  const updateDocStatus = async (docId: number, status: string) => {
     try {
       await apiClient.put(`/documents/${docId}/status?status=${status}`);
       fetchData();
