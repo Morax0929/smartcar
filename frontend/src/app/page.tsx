@@ -5,6 +5,8 @@ import { useState, useRef, useEffect } from 'react'
 import { Car, Brain, Shield, Calendar, MapPin, ChevronDown, Search, X, Menu } from 'lucide-react'
 import Chatbot from '@/components/chat/Chatbot'
 import { useRouter } from 'next/navigation'
+import Cookies from 'js-cookie'
+import { getImageUrl } from '@/lib/utils'
 
 export default function HomePage() {
   const router = useRouter()
@@ -14,10 +16,16 @@ export default function HomePage() {
   const [returnDate, setReturnDate] = useState("")
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [isAuth, setIsAuth] = useState(false)
   const locationRef = useRef<HTMLDivElement>(null)
 
+  useEffect(() => {
+    // Client-side xavfsiz check qilish (Hydration mismatch bo'lmasligi uchun)
+    setIsAuth(!!Cookies.get('access_token'))
+  }, [])
+
   const handleSearch = () => {
-    const token = localStorage.getItem('token')
+    const token = Cookies.get('access_token')
     if (!token) {
       setShowAuthModal(true)
       return
@@ -70,18 +78,30 @@ export default function HomePage() {
             {/* Desktop Links */}
             <div className="hidden md:flex items-center space-x-8">
               <Link href="/user/cars" className="text-gray-600 hover:text-gray-900 font-medium transition">Katalog</Link>
-              <Link href="/user" className="text-gray-600 hover:text-gray-900 font-medium transition">Dashboard</Link>
-              <Link href="/user/bookings" className="text-gray-600 hover:text-gray-900 font-medium transition">Buyurtmalarim</Link>
+              {isAuth && (
+                <>
+                  <Link href="/user" className="text-gray-600 hover:text-gray-900 font-medium transition">Dashboard</Link>
+                  <Link href="/user/bookings" className="text-gray-600 hover:text-gray-900 font-medium transition">Buyurtmalarim</Link>
+                </>
+              )}
             </div>
 
             {/* Desktop Auth */}
             <div className="hidden md:flex items-center space-x-3">
-              <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition">
-                Kirish
-              </Link>
-              <Link href="/register" className="text-sm font-medium bg-gray-900 text-brand-yellow px-5 py-2 rounded-lg hover:bg-black transition">
-                Ro'yxatdan o'tish
-              </Link>
+              {!isAuth ? (
+                <>
+                  <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition">
+                    Kirish
+                  </Link>
+                  <Link href="/register" className="text-sm font-medium bg-gray-900 text-brand-yellow px-5 py-2 rounded-lg hover:bg-black transition">
+                    Ro'yxatdan o'tish
+                  </Link>
+                </>
+              ) : (
+                <Link href="/user" className="text-sm font-medium bg-brand-yellow text-gray-900 px-5 py-2 rounded-lg hover:bg-yellow-400 transition">
+                  Mening Profilim
+                </Link>
+              )}
             </div>
 
             {/* Mobile Hamburger */}
@@ -101,19 +121,32 @@ export default function HomePage() {
             <Link href="/user/cars" className="py-2.5 text-gray-700 font-medium border-b border-gray-50" onClick={() => setMobileMenuOpen(false)}>
               Katalog
             </Link>
-            <Link href="/user" className="py-2.5 text-gray-700 font-medium border-b border-gray-50" onClick={() => setMobileMenuOpen(false)}>
-              Dashboard
-            </Link>
-            <Link href="/user/bookings" className="py-2.5 text-gray-700 font-medium border-b border-gray-50" onClick={() => setMobileMenuOpen(false)}>
-              Buyurtmalarim
-            </Link>
+            {isAuth && (
+              <>
+                <Link href="/user" className="py-2.5 text-gray-700 font-medium border-b border-gray-50" onClick={() => setMobileMenuOpen(false)}>
+                  Dashboard
+                </Link>
+                <Link href="/user/bookings" className="py-2.5 text-gray-700 font-medium border-b border-gray-50" onClick={() => setMobileMenuOpen(false)}>
+                  Buyurtmalarim
+                </Link>
+              </>
+            )}
+            
             <div className="flex gap-3 pt-2">
-              <Link href="/login" className="flex-1 text-center py-2.5 border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition" onClick={() => setMobileMenuOpen(false)}>
-                Kirish
-              </Link>
-              <Link href="/register" className="flex-1 text-center py-2.5 bg-gray-900 text-brand-yellow rounded-xl text-sm font-semibold hover:bg-black transition" onClick={() => setMobileMenuOpen(false)}>
-                Ro'yxatdan o'tish
-              </Link>
+              {!isAuth ? (
+                <>
+                  <Link href="/login" className="flex-1 text-center py-2.5 border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition" onClick={() => setMobileMenuOpen(false)}>
+                    Kirish
+                  </Link>
+                  <Link href="/register" className="flex-1 text-center py-2.5 bg-gray-900 text-brand-yellow rounded-xl text-sm font-semibold hover:bg-black transition" onClick={() => setMobileMenuOpen(false)}>
+                    Ro'yxatdan o'tish
+                  </Link>
+                </>
+              ) : (
+                <Link href="/user" className="flex-1 text-center py-2.5 bg-brand-yellow text-gray-900 rounded-xl text-sm font-semibold hover:bg-yellow-400 transition" onClick={() => setMobileMenuOpen(false)}>
+                  Mening Profilim
+                </Link>
+              )}
             </div>
           </div>
         )}
@@ -411,7 +444,7 @@ function CarCard({ brand, model, price, image, hasAiPrice, isActive = false }: a
         <div className="h-40 md:h-48 w-full flex items-center justify-center my-4 md:my-6 relative overflow-hidden rounded-xl">
           {image ? (
             <img 
-              src={image} 
+              src={getImageUrl(image)} 
               alt={`${brand} ${model}`} 
               className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
             />

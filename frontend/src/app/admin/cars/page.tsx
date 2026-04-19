@@ -6,8 +6,9 @@ import {
   AlertCircle, Search, ToggleLeft, ToggleRight, Loader2, ImageIcon
 } from "lucide-react";
 import Cookies from "js-cookie";
+import { getImageUrl } from "@/lib/utils";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+const API = process.env.NEXT_PUBLIC_API_URL || "https://smartcar-backend.onrender.com/api";
 
 interface CarItem {
   id: number;
@@ -238,7 +239,7 @@ export default function AdminCarsPage() {
                     <td className="px-5 py-4">
                       <div className="w-16 h-12 rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center">
                         {car.image_url ? (
-                          <img src={car.image_url} alt={car.name} className="w-full h-full object-cover" />
+                          <img src={getImageUrl(car.image_url)} alt={car.name} className="w-full h-full object-cover" />
                         ) : (
                           <ImageIcon className="w-5 h-5 text-slate-300" />
                         )}
@@ -376,7 +377,7 @@ export default function AdminCarsPage() {
               {/* Preview image */}
               {form.image_url && (
                 <div className="rounded-xl overflow-hidden h-40 bg-slate-100">
-                  <img src={form.image_url} alt="preview" className="w-full h-full object-cover" />
+                  <img src={getImageUrl(form.image_url)} alt="preview" className="w-full h-full object-cover" />
                 </div>
               )}
             </div>

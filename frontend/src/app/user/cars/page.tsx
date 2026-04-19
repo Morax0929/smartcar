@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Search, Star, Users, Fuel, Settings2, SlidersHorizontal, Sparkles, X, ChevronRight } from "lucide-react";
 import { apiClient } from "@/lib/api";
+import { getImageUrl } from "@/lib/utils";
 
 interface Car {
   id: number;
@@ -197,7 +198,7 @@ export default function UserCarsCatalog() {
                     </div>
                   )}
                   <img
-                    src={car.image_url || "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=600&auto=format&fit=crop"}
+                    src={getImageUrl(car.image_url)}
                     alt={car.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />

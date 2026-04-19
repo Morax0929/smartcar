@@ -43,8 +43,8 @@ async def upload_image(
     with open(filepath, "wb") as f:
         f.write(contents)
 
-    # Frontend uchun to'liq URL qaytarish
+    # Frontend uchun to'liq URL (xavfsizroq bo'lishi uchun faqat nisbiy /uploads qaytariladi)
     return {
-        "url": f"http://localhost:8000/uploads/{filename}",
+        "url": f"/uploads/{filename}",
         "filename": filename
     }

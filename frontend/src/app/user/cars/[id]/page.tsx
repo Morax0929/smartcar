@@ -9,6 +9,7 @@ import {
 import Link from "next/link";
 import Cookies from "js-cookie";
 import { apiClient } from "@/lib/api";
+import { getImageUrl } from "@/lib/utils";
 
 interface Car {
   id: number;
@@ -129,7 +130,7 @@ export default function CarDetailPage() {
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100">
             <div className="relative h-64 sm:h-80 md:h-[400px]">
-               <img src={car.image_url} alt={car.name} className="w-full h-full object-cover" />
+               <img src={getImageUrl(car.image_url)} alt={car.name} className="w-full h-full object-cover" />
                <div className="absolute top-4 left-4 sm:top-6 sm:left-6 bg-slate-900/80 backdrop-blur-md text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl sm:rounded-2xl text-[10px] sm:text-sm font-bold">
                  {car.year} yilda ishlab chiqarilgan
                </div>
