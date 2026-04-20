@@ -30,31 +30,152 @@ class ChatRequest(BaseModel):
 
 @router.post("/chat")
 def ai_chat(req: ChatRequest, db: Session = Depends(get_db)):
-    msg = req.message.lower()
-    cars = db.query(Car).filter(Car.is_available == True).all()
+    msg = req.message.lower().strip()
+    all_cars  = db.query(Car).all()
+    avail     = [c for c in all_cars if c.is_available]
 
-    if "oilaviy" in msg or "katta" in msg or "yo'ltanmas" in msg:
-        recs = [c for c in cars if c.category in ["Krossover", "Premium"]]
-        if recs:
-            res = f"Sizga oilaviy safarlar uchun juda qulay '{recs[0].brand} {recs[0].name}' avtomobilini tavsiya qilaman!"
-        else:
-            res = "Hozirda oilaviy mashinalarimiz band, lekin tez orada yangilari qo'shiladi."
-    elif "arzon" in msg or "ekonom" in msg:
-        cheapest = sorted(cars, key=lambda x: x.price_per_day)
-        if cheapest:
-            res = f"Eng arzon variantimiz: '{cheapest[0].brand} {cheapest[0].name}'. Kunlik narxi: {cheapest[0].price_per_day:,.0f} so'm."
-        else:
-            res = "Hozircha ekonom-klassdagi bo'sh avtomobillarimiz yo'q."
-    elif "tez" in msg or "sport" in msg:
-        sporty = [c for c in cars if c.category == "Premium"]
-        if sporty:
-            res = f"Tezlik uchun '{sporty[0].brand} {sporty[0].name}' — ajoyib tanlov!"
-        else:
-            res = "Sport mashinalarimiz hozirda ijarada."
-    else:
-        res = "Sizga qanday turdagi mashina kerak? Sedan, Krossover, yoki Premium? Maqsadingizni ayting — yordam beraman!"
+    # ── SALOMLASHISH ──────────────────────────────────────────
+    GREET = ["salom", "assalom", "hi", "hello", "hey", "xayr", "yaxshimisiz"]
+    if any(k in msg for k in GREET):
+        return {"reply": "Assalomu alaykum! 👋 SmartCar AI yordamchisiman.\n\nSizga qanday yordam bera olaman?\n• 🚗 Mashina tanlash\n• 💰 Narxlar haqida\n• 📋 Bron qilish tartibi\n• 🔧 Texnik ma'lumotlar\n\nShunchaki so'rang!"}
 
-    return {"reply": res}
+    # ── XAYR / RAHMAT ─────────────────────────────────────────
+    BYE = ["xayr", "ko'rishguncha", "rahmat", "tashakkur", "yaxshi bo'ling"]
+    if any(k in msg for k in BYE):
+        return {"reply": "Xayr! 😊 SmartCar'dan foydalanganingiz uchun rahmat. Yana keladigan bo'lsangiz, doim xizmatdamiz! 🚗"}
+
+    # ── NECHA MASHINA BAR ─────────────────────────────────────
+    COUNT = ["nechta", "qancha", "nechta mashina", "nechta avto", "soni", "jami"]
+    if any(k in msg for k in COUNT):
+        return {"reply": f"🚗 Hozirda bazamizda jami **{len(all_cars)} ta** avtomobil bor.\nUlardan **{len(avail)} tasi** hozir ijaraga mavjud, **{len(all_cars)-len(avail)} tasi** band."}
+
+    # ── MAVJUD MASHINALAR ─────────────────────────────────────
+    AVAIL = ["mavjud", "bo'sh", "ijaraga olsa bo'ladi", "qaysilari bor", "free", "available"]
+    if any(k in msg for k in AVAIL):
+        if not avail:
+            return {"reply": "😔 Afsuski, hozirda barcha mashinalarimiz band. Tez orada yangilari qo'shiladi!"}
+        sample = avail[:4]
+        lines = "\n".join([f"  • {c.brand} {c.name} ({c.year}) — {c.price_per_day:,.0f} so'm/kun" for c in sample])
+        more = f"\n  ...va yana {len(avail)-4} ta" if len(avail) > 4 else ""
+        return {"reply": f"✅ Hozir ijaraga mavjud **{len(avail)} ta** avtomobil:\n{lines}{more}\n\nBatafsil katalog uchun /user/cars sahifasiga o'ting!"}
+
+    # ── ENG ARZON ─────────────────────────────────────────────
+    CHEAP = ["arzon", "ekonom", "budget", "tejamkor", "kam pul", "narxi past", "qimmat emas", "arzonga"]
+    if any(k in msg for k in CHEAP):
+        if not avail:
+            return {"reply": "Hozirda bo'sh mashinalarimiz yo'q. Birozdan keyin qaytib ko'ring!"}
+        top3 = sorted(avail, key=lambda x: x.price_per_day)[:3]
+        lines = "\n".join([f"  {i+1}. {c.brand} {c.name} — **{c.price_per_day:,.0f} so'm/kun**" for i, c in enumerate(top3)])
+        return {"reply": f"💰 Eng arzon 3 ta variant:\n{lines}\n\nBularning barchasi hozir bo'sh va tayyor!"}
+
+    # ── ENG QIMMAT / PREMIUM ──────────────────────────────────
+    PREM = ["premium", "qimmat", "lyuks", "luxury", "vip", "hashamat", "biznes", "eng yaxshi"]
+    if any(k in msg for k in PREM):
+        top3 = sorted(avail, key=lambda x: x.price_per_day, reverse=True)[:3]
+        if not top3:
+            return {"reply": "Premium mashinalarimiz hozirda band. Tez orada bo'shaydi!"}
+        lines = "\n".join([f"  {i+1}. {c.brand} {c.name} — **{c.price_per_day:,.0f} so'm/kun** ⭐" for i, c in enumerate(top3)])
+        return {"reply": f"👑 Premium sinfdagi eng zo'r mashinalarimiz:\n{lines}\n\nSifat va qulaylik kafolatlangan!"}
+
+    # ── OILAVIY ───────────────────────────────────────────────
+    FAMILY = ["oilaviy", "oila", "bola", "yirik", "katta salon", "kengroq", "7 kishilik", "minivan"]
+    if any(k in msg for k in FAMILY):
+        fam = [c for c in avail if c.category in ["Krossover", "SUV", "Minivan", "Off-road"]]
+        if fam:
+            c = fam[0]
+            return {"reply": f"👨‍👩‍👧‍👦 Oilaviy sayohatlar uchun eng yaxshi tavsiyam:\n\n🚙 **{c.brand} {c.name}** ({c.year})\n💰 Kunlik: {c.price_per_day:,.0f} so'm\n📦 Keng salon, yuqori klirens\n\nBatafsil ma'lumot va bron uchun katalogga o'ting!"}
+        return {"reply": "SUV va krossovеrlarimiz hozirda band. Lekin tez orada yangilari keladi!"}
+
+    # ── SPORT / TEZ ───────────────────────────────────────────
+    SPORT = ["sport", "tez", "uchuvchi", "gaz", "kuchli", "shiddatli", "racing", "turbo"]
+    if any(k in msg for k in SPORT):
+        sp = [c for c in avail if c.category in ["Premium", "Sporty", "Sport"]]
+        if sp:
+            c = sp[0]
+            return {"reply": f"🏎️ Tezlik va adrenalinga oshiq bo'lsangiz:\n\n⚡ **{c.brand} {c.name}** ({c.year})\n💰 Kunlik: {c.price_per_day:,.0f} so'm\n\nBu mashina sizni hayajontantirishiga kafilman!"}
+        return {"reply": "Sport mashinalarimiz hozir ijarada. Boshqa kategoriyalardan birini ko'rib chiqing!"}
+
+    # ── ELEKTR / EV ───────────────────────────────────────────
+    EV = ["elektr", "ev", "electric", "zaryadla", "eco", "hybrid", "gibrid", "byd", "tesla"]
+    if any(k in msg for k in EV):
+        ev_cars = [c for c in avail if c.category in ["EV", "PHEV", "Hybrid"] or c.brand in ["BYD", "Tesla", "Volkswagen"]]
+        if ev_cars:
+            c = ev_cars[0]
+            return {"reply": f"⚡ Ekologik toza elektr avtomobillarimiz:\n\n🔋 **{c.brand} {c.name}** ({c.year})\n💰 Kunlik: {c.price_per_day:,.0f} so'm\n🌱 Benzin sarfi: 0 litr!\n\nKelajakni bugun boshdan kechiring!"}
+        return {"reply": "Elektr mashinalarimiz hozir ijarada. Tez orada qaytib kelishadi!"}
+
+    # ── NARX SO'RASH ──────────────────────────────────────────
+    PRICE = ["narx", "pul", "qancha turadi", "necha so'm", "cost", "price", "tariflar", "kunlik"]
+    if any(k in msg for k in PRICE):
+        if not avail:
+            return {"reply": "Hozirda bo'sh mashinalarimiz yo'q."}
+        cheapest = sorted(avail, key=lambda x: x.price_per_day)
+        mn, mx = cheapest[0], cheapest[-1]
+        return {"reply": f"💵 Narxlar diapazoni:\n\n📉 Eng arzon: **{mn.price_per_day:,.0f} so'm/kun** ({mn.brand} {mn.name})\n📈 Eng qimmat: **{mx.price_per_day:,.0f} so'm/kun** ({mx.brand} {mx.name})\n\nO'rtacha: **{sum(c.price_per_day for c in avail)/len(avail):,.0f} so'm/kun**\n\nAniqlashtirilgan narxlar uchun katalogdan mashina tanlang!"}
+
+    # ── BRON QILISH ───────────────────────────────────────────
+    BOOK = ["bron", "qanday olsa bo'ladi", "bron qilish", "ijara", "olmoqchi", "book", "rezerv", "zakazla"]
+    if any(k in msg for k in BOOK):
+        return {"reply": "📋 Mashina bron qilish tartibi:\n\n1️⃣ Ro'yxatdan o'ting yoki tizimga kiring\n2️⃣ /user/cars sahifasidan mashina tanlang\n3️⃣ Sanalarni belgilang va «Bron» tugmani bosing\n4️⃣ To'lov qiling (Karta yoki naqd)\n5️⃣ Shartnoma elektron imzolanadi\n\n⏱️ Butun jarayon 5 daqiqa!"}
+
+    # ── HUJJAT / TALAB ────────────────────────────────────────
+    DOC = ["hujjat", "guvohnoma", "pasport", "id", "nima kerak", "talab", "shart", "kyc"]
+    if any(k in msg for k in DOC):
+        return {"reply": "📄 Ijara uchun talab qilinadigan hujjatlar:\n\n✅ Pasport (shaxsni tasdiqlovchi)\n✅ Xaydovchilik guvohnomasi (haydovchi uchun)\n✅ Hujjatlarni tizimga yuklang — 5 daqiqada tasdiqlash\n\nHujjatlar tasdiqlangach, istalgan mashinani bron qilishingiz mumkin!"}
+
+    # ── TO'LOV ────────────────────────────────────────────────
+    PAY = ["to'lov", "payme", "click", "karta", "naqd", "qanday to'lanadi", "payment"]
+    if any(k in msg for k in PAY):
+        return {"reply": "💳 To'lov usullari:\n\n💳 Plastik karta (Visa/Mastercard/UzCard)\n📱 PayMe va Click orqali\n💵 Naqd pul (ofisda)\n\nBarcha to'lovlar xavfsiz shifrlangan kanal orqali amalga oshiriladi!"}
+
+    # ── YO'L / SHAHAR ─────────────────────────────────────────
+    ROAD = ["toshkent", "samarqand", "buxoro", "farg'ona", "shahar", "xiva", "shahardagi", "yo'l", "safar", "trip"]
+    if any(k in msg for k in ROAD):
+        sedan = [c for c in avail if c.category in ["Sedan", "Comfort"]]
+        if sedan:
+            c = sedan[0]
+            return {"reply": f"🗺️ Shaharlararo sayohat uchun zo'r tanlov:\n\n🚗 **{c.brand} {c.name}** — qulay, tejamkor va ishonchli!\n💰 Kunlik: {c.price_per_day:,.0f} so'm\n\nUzoq safarlar uchun ham ko'p kunlik ijara chegirmalarimiz bor!"}
+        return {"reply": "Shaharlararo sayohat uchun mashinalarimiz hozir band. Birozdan keyin qaytib ko'ring!"}
+
+    # ── TOG' / OFFROAD ────────────────────────────────────────
+    OFF = ["tog'", "offroad", "off-road", "qiyalik", "tosh yo'l", "jeep", "prado", "suv"]
+    if any(k in msg for k in OFF):
+        off = [c for c in avail if c.category in ["Off-road", "SUV", "Krossover"]]
+        if off:
+            c = off[0]
+            return {"reply": f"⛰️ Og'ir yo'llar uchun kuchli mashina:\n\n🏔️ **{c.brand} {c.name}** ({c.year})\n💰 Kunlik: {c.price_per_day:,.0f} so'm\n🔒 Yuqori klirens va 4WD — har qanday yo'lda ishonchli!\n\nBu mashina siz uchun!"}
+        return {"reply": "Offroad mashinalarimiz hozir ijarada. Tez orada yangilari keladi!"}
+
+    # ── YORDAM / IMKONIYATLAR ─────────────────────────────────
+    HELP = ["yordam", "help", "nima qila olasan", "nima bilasan", "savol", "imkoniyat"]
+    if any(k in msg for k in HELP):
+        return {"reply": "🤖 Men quyidagi savollarga javob bera olaman:\n\n🚗 Mashina tanlab berish\n💰 Narxlar va chegirmalar\n📋 Bron qilish tartibi\n📄 Kerakli hujjatlar\n💳 To'lov usullari\n⛽ Elektr va gibrid mashinalar\n👨‍👩‍👧 Oilaviy avtomobillar\n🏎️ Sport mashinalar\n⛰️ Offroad mashinalar\n\nShunchaki so'rang, yordam beraman!"}
+
+    # ── KATEGORIYA SO'RASH ────────────────────────────────────
+    CAT = ["kategoriya", "tur", "sedan", "krossover", "minivan", "universal"]
+    if any(k in msg for k in CAT):
+        cats = {}
+        for c in avail:
+            cats[c.category] = cats.get(c.category, 0) + 1
+        lines = "\n".join([f"  • {cat}: {cnt} ta" for cat, cnt in sorted(cats.items())])
+        return {"reply": f"📊 Hozir mavjud kategoriyalar:\n{lines}\n\nQaysi kategoriya siz uchun qiziqarliroq?"}
+
+    # ── BITTA MASHINA HAQIDA SO'RASH ──────────────────────────
+    for c in all_cars:
+        if c.name.lower() in msg or c.brand.lower() in msg:
+            status = "✅ Hozir mavjud" if c.is_available else "❌ Hozir band"
+            return {"reply": f"🚗 **{c.brand} {c.name}** ({c.year}) haqida:\n\n💰 Kunlik narx: **{c.price_per_day:,.0f} so'm**\n📁 Kategoriya: {c.category}\n📊 Holati: {status}\n\n{c.description or ''}\n\nBron qilish uchun katalogdan bu mashinani tanlang!"}
+
+    # ── DEFAULT ───────────────────────────────────────────────
+    tips = [
+        "arzon mashinalar", "premium avtomobillar", "oilaviy mashina",
+        "elektr mashina", "bron qilish tartibi", "to'lov usullari"
+    ]
+    import random
+    tip = random.choice(tips)
+    return {"reply": f"🤔 Savolingizni tushunmadim. Quyidagi mavzulardan birida savol bering:\n\n  • «{tip}» kabi yozib ko'ring\n  • Yoki konkret mashina nomini ayting\n\nYordam kerak bo'lsa «yordam» deb yozing! 😊"}
+
+
 
 
 # ──────────────────────────────────────────────
