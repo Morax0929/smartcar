@@ -47,6 +47,18 @@ export default function HomePage() {
     "Buxoro shahri",
     "Xiva shahri",
     "Farg'ona shahri",
+    "Namangan shahri",
+    "Andijon shahri",
+    "Qo'qon shahri",
+    "Chirchiq shahri",
+    "Nukus shahri",
+    "Urganch shahri",
+    "Termiz shahri",
+    "Qarshi shahri",
+    "Navoiy shahri",
+    "Jizzax shahri",
+    "Guliston shahri",
+    "Denov shahri",
   ]
 
   useEffect(() => {
