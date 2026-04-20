@@ -196,29 +196,50 @@ export default function HomePage() {
             {/* Location */}
             <div
               ref={locationRef}
-              className="flex-1 border border-gray-200 rounded-xl p-3 flex items-start space-x-3 hover:border-gray-300 transition focus-within:border-brand-yellow focus-within:ring-1 focus-within:ring-brand-yellow cursor-pointer relative"
-              onClick={() => setShowLocations(!showLocations)}
+              className="flex-1 border border-gray-200 rounded-xl p-3 flex items-start space-x-3 hover:border-gray-300 transition focus-within:border-brand-yellow focus-within:ring-1 focus-within:ring-brand-yellow relative"
             >
               <MapPin className="h-5 w-5 text-gray-400 mt-1 shrink-0" />
               <div className="flex flex-col w-full min-w-0">
                 <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Qabul qilish joyi</span>
-                <div className="outline-none text-gray-800 font-medium bg-transparent pt-1 w-full flex justify-between items-center">
-                  <span className="truncate">{selectedLocation}</span>
-                  <ChevronDown className={`h-4 w-4 text-gray-400 shrink-0 transition-transform ${showLocations ? 'rotate-180' : ''}`} />
+                <div className="flex items-center w-full pt-1">
+                  <input
+                    type="text"
+                    value={selectedLocation}
+                    onChange={(e) => { setSelectedLocation(e.target.value); setShowLocations(true); }}
+                    onFocus={() => setShowLocations(true)}
+                    placeholder="Shahar yoki joy..."
+                    className="outline-none text-gray-800 font-medium bg-transparent w-full text-sm"
+                  />
+                  <ChevronDown
+                    className={`h-4 w-4 text-gray-400 shrink-0 transition-transform cursor-pointer ${showLocations ? 'rotate-180' : ''}`}
+                    onClick={() => setShowLocations(!showLocations)}
+                  />
                 </div>
               </div>
 
               {showLocations && (
-                <div className="absolute top-[76px] left-0 right-0 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden py-2">
-                  {locations.map((loc, idx) => (
+                <div className="absolute top-[76px] left-0 right-0 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden py-2 max-h-60 overflow-y-auto">
+                  {locations
+                    .filter(loc => loc.toLowerCase().includes(selectedLocation.toLowerCase()) || selectedLocation === '')
+                    .map((loc, idx) => (
+                      <div
+                        key={idx}
+                        className="px-4 py-3 hover:bg-gray-50 cursor-pointer text-gray-800 font-medium text-sm transition flex items-center gap-2"
+                        onMouseDown={(e) => { e.preventDefault(); setSelectedLocation(loc); setShowLocations(false); }}
+                      >
+                        <MapPin className="h-3.5 w-3.5 text-gray-400 shrink-0" />
+                        {loc}
+                      </div>
+                    ))}
+                  {selectedLocation && !locations.some(loc => loc.toLowerCase() === selectedLocation.toLowerCase()) && (
                     <div
-                      key={idx}
-                      className="px-4 py-3 hover:bg-gray-50 cursor-pointer text-gray-800 font-medium text-sm transition"
-                      onClick={() => { setSelectedLocation(loc); setShowLocations(false) }}
+                      className="px-4 py-3 hover:bg-yellow-50 cursor-pointer text-yellow-600 font-semibold text-sm transition flex items-center gap-2 border-t border-gray-100"
+                      onMouseDown={(e) => { e.preventDefault(); setShowLocations(false); }}
                     >
-                      {loc}
+                      <MapPin className="h-3.5 w-3.5 shrink-0" />
+                      "{selectedLocation}" — qo'lda kiritilgan
                     </div>
-                  ))}
+                  )}
                 </div>
               )}
             </div>
