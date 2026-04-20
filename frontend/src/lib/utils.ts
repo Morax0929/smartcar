@@ -1,7 +1,10 @@
 export const getImageUrl = (url: string | null | undefined): string => {
   if (!url) return "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=600&auto=format&fit=crop";
   
-  const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://smartcar-backend.onrender.com/api').replace('/api', '');
+  let baseUrl = "http://localhost:8000"; // default local backend
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    baseUrl = process.env.NEXT_PUBLIC_API_URL.replace('/api', '');
+  }
 
   // Backend lokal bo'lgan vaqtda xato saqlangan rasmlarni fix qilish
   if (url.startsWith('http://localhost:8000')) {

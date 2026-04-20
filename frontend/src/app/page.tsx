@@ -431,6 +431,9 @@ export default function HomePage() {
 }
 
 function CarCard({ brand, model, price, image, hasAiPrice, isActive = false }: any) {
+  const fallbackImg = "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=600&auto=format&fit=crop";
+  const [imgSrc, setImgSrc] = useState(getImageUrl(image) || fallbackImg);
+  
   return (
     <div className={`bg-white rounded-2xl overflow-hidden transition-all duration-300 border-2 flex flex-col h-full
       ${isActive ? 'border-brand-yellow shadow-xl shadow-brand-yellow/10' : 'border-gray-100 shadow-sm hover:border-gray-300 hover:shadow-md'}`}>
@@ -445,11 +448,12 @@ function CarCard({ brand, model, price, image, hasAiPrice, isActive = false }: a
 
         <div className="h-40 md:h-48 w-full flex items-center justify-center my-4 md:my-6 relative overflow-hidden rounded-xl">
           {image ? (
-            <img 
-              src={getImageUrl(image)} 
-              alt={`${brand} ${model}`} 
-              className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
-            />
+              <img 
+                src={imgSrc} 
+                alt={`${brand} ${model}`} 
+                onError={() => setImgSrc(fallbackImg)}
+                className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+              />
           ) : (
             <div className="w-56 md:w-64 h-28 md:h-32 bg-gray-200 rounded-xl flex items-center justify-center">
               <span className="text-gray-400 font-medium rotate-[-15deg] text-sm">{model} Image</span>

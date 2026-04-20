@@ -8,6 +8,7 @@ import { apiClient } from "@/lib/api";
 import Cookies from "js-cookie";
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
+import { getImageUrl } from "@/lib/utils";
 
 interface CarItem {
   id: number;
@@ -321,7 +322,7 @@ export default function AdminDashboard() {
                   <tr key={car.id} className="hover:bg-slate-50/50 transition-colors">
                     <td className="px-5 py-4 font-bold text-slate-900 flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl overflow-hidden bg-slate-100 shrink-0">
-                        {car.image_url && <img src={car.image_url} alt="" className="w-full h-full object-cover" />}
+                        {car.image_url && <img src={getImageUrl(car.image_url)} alt="" onError={(e) => { e.currentTarget.src = "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=600&auto=format&fit=crop"; }} className="w-full h-full object-cover" />}
                       </div>
                       <div>
                         <div>{car.name}</div>

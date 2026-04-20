@@ -106,7 +106,7 @@ def ai_agent_command(req: AgentRequest, db: Session = Depends(get_db)):
 
     # ── 3. MASHINA RO'YXATI ───────────────────────────────
     CAR_LIST_KEYS = ["mashinalar ro'yxati", "avtomobillar ro'yxati", "parkim", "fleet", "hammasini ko'rsat", "avtomobillar", "barcha mashinalar", "mashinalar soni", "cars list", "mashina listi"]
-    if any(k in cmd for k in CAR_LIST_KEYS):
+    if any(k in cmd for k in CAR_LIST_KEYS) and "narx" not in cmd:
         cars = db.query(Car).all()
         if not cars:
             return {"success": True, "message": "Bazada hech qanday mashina yo'q."}
@@ -178,7 +178,7 @@ def ai_agent_command(req: AgentRequest, db: Session = Depends(get_db)):
     # ── 5. HUJJATLARNI TASDIQLASH ─────────────────────────
     # ── 4.5. HUJJATLAR RO'YXATI ──────────────────────────────
     DOC_LIST_KEYS = ["hujjatlar ro'yxati", "hujjatlar listi", "kyc ro'yxati", "docs list", "pending hujjatlar", "tekshirilmagan hujjatlar"]
-    if any(k in cmd for k in DOC_LIST_KEYS):
+    if any(k in cmd for k in DOC_LIST_KEYS) and not any(w in cmd for w in ["tasdiqla", "rad", "verify", "reject"]):
         docs = db.query(Document).all()
         if not docs:
             return {"success": True, "message": "Hujjatlar bazasi bo'sh."}
@@ -246,7 +246,7 @@ def ai_agent_command(req: AgentRequest, db: Session = Depends(get_db)):
     # ── 7. BRONNI TASDIQLASH ──────────────────────────────
     # ── 6.5. BRONLAR RO'YXATI ─────────────────────────────────
     BOOK_LIST_KEYS = ["bronlar ro'yxati", "bronlar listi", "bookings", "bronlar", "barcha bronlar", "pending bronlar", "kutilayotgan bronlar"]
-    if any(k in cmd for k in BOOK_LIST_KEYS):
+    if any(k in cmd for k in BOOK_LIST_KEYS) and not any(w in cmd for w in ["tasdiqla", "bekor", "cancel", "o'chir"]):
         bookings = db.query(Booking).all()
         if not bookings:
             return {"success": True, "message": "Hozirda hech qanday bron yo'q."}
@@ -403,36 +403,30 @@ def ai_agent_command(req: AgentRequest, db: Session = Depends(get_db)):
         return {"success": False, "message": "Mashina nomi topilmadi."}
 
     # ── 15. YORDAM ─────────────────────────────────────────
-    HELP_KEYS = ["yordam", "help", "nima qila olasan", "buyruqlar", "imkoniyatlar", "nimalar qila olasan", "qanday buyruqlar", "funksiyalar", "komandalar", "commands"]
+    HELP_KEYS = ["/help", "/yordam", "yordam", "help", "nima qila olasan", "buyruqlar", "imkoniyatlar", "nimalar qila olasan", "qanday buyruqlar", "funksiyalar", "komandalar", "commands"]
     if any(k in cmd for k in HELP_KEYS):
         msg = (
-            "🤖 AI Agent qila oladigan ishlar:\n\n"
-            "📊 STATISTIKA:\n"
-            "  • 'statistika ko'rsat' — umumiy hisobot\n"
-            "  • 'dashboard' — tizim holati\n\n"
-            "🚗 MASHINALAR:\n"
-            "  • 'mashinalar ro'yxati' — barcha mashinalar\n"
-            "  • 'bo'sh mashinalar' — mavjud mashinalar\n"
-            "  • 'band mashinalar' — ijaradagi mashinalar\n"
-            "  • 'servis kerak' — texnik ko'rikka muhtojlar\n"
-            "  • 'Malibuni tekshir' — bitta mashina haqida to'liq\n"
-            "  • 'Malibuni yop' — ijaradan vaqtincha yopish\n"
-            "  • 'Malibuni ochib qo'y' — ijaraga qaytarish\n"
-            "  • 'Malibu servis qilindi' — servis yurishi yangilash\n\n"
-            "💰 NARX:\n"
-            "  • 'Malibu narxini 10% ko'tar' — narx oshirish\n"
-            "  • 'Nexia narxini 15% arzonlashtir' — narx tushirish\n"
-            "  • 'Barcha mashinalar narxini 5% oshir'\n\n"
-            "📋 BRONLAR:\n"
-            "  • 'bronlar ro'yxati' — barcha bronlar\n"
-            "  • 'bronlarni bekor qil' — pending bronlarni bekor\n"
-            "  • 'bronni tasdiqla' — pending bronlarni confirm\n\n"
-            "📄 HUJJATLAR:\n"
-            "  • 'hujjatlar ro'yxati' — hujjatlar holati\n"
-            "  • 'hujjatlarni tasdiqla / approve' — pending hujjatlar\n"
-            "  • 'hujjatni rad et / reject' — pending rad etish\n\n"
-            "👥 FOYDALANUVCHILAR:\n"
-            "  • 'foydalanuvchilar ro'yxati' — barcha userlar"
+            "🤖 **SmartCar AI Agent Buyruqlari:**\n\n"
+            "📊 **STATISTIKA:**\n"
+            "  • `statistika` — umumiy hisobot va dashboard\n\n"
+            "🚗 **MASHINALAR:**\n"
+            "  • `mashinalar ro'yxati` — barcha mashinalarni ko'rsatish\n"
+            "  • `bo'sh mashinalar` / `band mashinalar` — holatiga qarab filtrlash\n"
+            "  • `[mashina nomi] holati` (masalan: *Malibu holati*) — bitta mashina infosi\n"
+            "  • `[mashina]ni ochib qo'y` / `yopib qo'y` — ijaraga berish huquqini ochish/yopish\n"
+            "  • `servis kerak` — texnik ko'rikka muhtoj mashinalar ro'yxati\n"
+            "  • `[mashina] servis qilindi` — yurish masofasini (km) yangilash\n\n"
+            "💰 **DINAMIK NARXLASH:**\n"
+            "  • `[mashina] narxini [X]% ko'tar/tushir` — (masalan: *Nexia narxini 10% tushir*)\n"
+            "  • `barcha mashinalar narxini [X]% oshir/arzonlashtir` — barcha narxlarni yangilash\n\n"
+            "📋 **BRONLAR & IJARALAR:**\n"
+            "  • `bronlar ro'yxati` — barcha kutilayotgan va joriy bronlar\n"
+            "  • `bronlarni tasdiqla/bekor qil` — kutilayotgan bronlarni ommaviy boshqarish\n\n"
+            "📄 **HUJJATLAR (KYC):**\n"
+            "  • `hujjatlar ro'yxati` — foydalanuvchilar yuklagan hujjatlar\n"
+            "  • `hujjatlarni tasdiqla/rad et` — tekshirilmagan hujjatlarni boshqarish\n\n"
+            "👥 **FOYDALANUVCHILAR:**\n"
+            "  • `foydalanuvchilar ro'yxati` — barcha faol mijozlarni ko'rsatish"
         )
         return {"success": True, "message": msg}
 
@@ -440,11 +434,7 @@ def ai_agent_command(req: AgentRequest, db: Session = Depends(get_db)):
     return {
         "success": False,
         "message": (
-            "⚠️ Buyruq tushunilmadi. Yordam uchun 'yordam' yozing.\n"
-            "Misol buyruqlar:\n"
-            "  • 'statistika ko'rsat'\n"
-            "  • 'Malibu narxini 10% ko'tar'\n"
-            "  • 'foydalanuvchilar ro'yxati'\n"
-            "  • 'Malibuni tekshir'"
+            "⚠️ Buyruq tushunilmadi. Barcha imkoniyatlarni ko'rish uchun yozing:\n"
+            "👉 **/help** yozing."
         )
     }

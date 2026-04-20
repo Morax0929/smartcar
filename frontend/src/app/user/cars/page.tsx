@@ -200,6 +200,7 @@ export default function UserCarsCatalog() {
                   <img
                     src={getImageUrl(car.image_url)}
                     alt={car.name}
+                    onError={(e) => { e.currentTarget.src = "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=600&auto=format&fit=crop"; }}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
                 </div>
